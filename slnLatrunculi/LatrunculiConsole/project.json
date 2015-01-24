@@ -1,0 +1,13 @@
+﻿{
+    "version": "1.0.0-*",
+    "commands": {
+        "run": "run"
+    },
+    "frameworks": {
+        "aspnetcore50": {
+            "dependencies": {
+                "System.Console": "4.0.0-beta-22512"
+            }
+        }
+    }
+}
