@@ -4,13 +4,14 @@
         "run": "run"
     },
     "dependencies": {
-        "Latrunculi": ""   
+        "System.Console": "4.0.0-beta-22523",
+        "System.Runtime": "4.0.20-beta-22523",
+        "Latrunculi": ""
     },
     "frameworks": {
         "aspnet50": {
-            "dependencies": {
-                "System.Console": "4.0.0-beta-22512"
-            }
+        },
+        "aspnetcore50": {
         }
     }
 }

@@ -1,7 +1,7 @@
 {
     "version": "1.0.0-*",
     "dependencies": {
-        "System.Runtime": "4.0.20-beta-22512",
+        "System.Runtime": "4.0.20-beta-22523",
         "Latrunculi": "",
         "xunit.execution": "2.0.0.0-aspnet-beta4-10122",
         "xunit.runner.kre": "1.0.0.0-beta4-1053"
