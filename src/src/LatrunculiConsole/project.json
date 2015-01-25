@@ -3,6 +3,9 @@
     "commands": {
         "run": "run"
     },
+    "dependencies": {
+        "Latrunculi": ""   
+    },
     "frameworks": {
         "aspnetcore50": {
             "dependencies": {

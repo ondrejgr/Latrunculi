@@ -1,5 +1,8 @@
 {
     "version": "1.0.0-*",
+    "dependencies": {
+        "Latrunculi": ""   
+    },
     "frameworks" : {
         "aspnetcore50" : { 
             "dependencies": {
