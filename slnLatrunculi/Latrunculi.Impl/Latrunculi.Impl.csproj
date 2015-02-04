@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{80C73012-A72B-4896-8CE3-3106B671DB41}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{7326A308-6CBB-4C66-A3D9-3716A7EA75F7}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LatrunculiConsole</RootNamespace>
-    <AssemblyName>LatrunculiConsole</AssemblyName>
+    <RootNamespace>Latrunculi.Impl</RootNamespace>
+    <AssemblyName>Latrunculi.Impl</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\bin\</OutputPath>
@@ -48,13 +46,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LatrunculiUI.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="LatrunculiBoard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="latrunculi.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Latrunculi.Common\Latrunculi.Common.csproj">
+      <Project>{ccd542f1-b762-4acc-aa6f-f848ca807d72}</Project>
+      <Name>Latrunculi.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

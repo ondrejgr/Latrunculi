@@ -10,7 +10,20 @@ namespace LatrunculiConsole
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Test");
+            Console.WriteLine("Latrunculi - desková hra");
+            try
+            {
+                using (LatrunculiUI ui = new LatrunculiUI())
+                {
+
+                }
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine();
+                Console.WriteLine(string.Format("CHYBA ! Při běhu aplikace došlo k výjimce: {0}", exc.Message));
+            }
+            Console.WriteLine("Konec. Stiskněte Enter pro opuštění aplikace.");
             Console.ReadLine();
         }
     }
