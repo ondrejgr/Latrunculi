@@ -51,10 +51,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="CoordTest.cs" />
-    <Compile Include="BoardTest.cs" />
+    <Compile Include="Board\CoordTest.cs" />
+    <Compile Include="Board\BoardTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MoveTest.cs" />
+    <Compile Include="Board\MoveTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Latrunculi.Common\Latrunculi.Common.csproj">

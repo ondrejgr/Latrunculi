@@ -80,6 +80,24 @@ namespace Latrunculi.UnitTests
         }
 
         [TestMethod]
+        public void LatrunculiBoardCoordRangeCheck()
+        {
+            Board b = new Latrunculi.Impl.LatrunculiBoard();
+            Coord c = new Coord();
+
+            Assert.IsFalse(b.IsCoordValid(c));
+
+            c.Set("J8");
+            Assert.IsFalse(b.IsCoordValid(c));
+
+            c.Set("H8");
+            Assert.IsFalse(b.IsCoordValid(c));
+
+            c.Set("A5");
+            Assert.IsTrue(b.IsCoordValid(c));
+        }
+
+        [TestMethod]
         public void LatrunculiInitedBoard()
         {
             Board b = new Latrunculi.Impl.LatrunculiBoard();

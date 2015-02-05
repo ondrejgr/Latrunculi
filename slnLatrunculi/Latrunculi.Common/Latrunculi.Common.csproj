@@ -46,12 +46,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Board.cs" />
-    <Compile Include="Coord.cs" />
-    <Compile Include="GameEvents.cs" />
-    <Compile Include="IGame.cs" />
-    <Compile Include="PiecesEnum.cs" />
-    <Compile Include="Move.cs" />
+    <Compile Include="Board\Board.cs" />
+    <Compile Include="Board\Coord.cs" />
+    <Compile Include="Game\GameEvents.cs" />
+    <Compile Include="Game\IGame.cs" />
+    <Compile Include="Board\PiecesEnum.cs" />
+    <Compile Include="Board\Move.cs" />
+    <Compile Include="Player\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
