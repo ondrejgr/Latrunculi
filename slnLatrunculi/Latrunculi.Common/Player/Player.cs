@@ -11,6 +11,41 @@ namespace Latrunculi
     /// </summary>
     public abstract class Player
     {
+        public Player(PlayersEnum color)
+        {
+            _color = color;
+        }
+
+        public string Name
+        {
+            get
+            {
+                switch (Color)
+                {
+                    case PlayersEnum.plrBlack:
+                        return "černý";
+                    default:
+                        return "bílý";
+                }
+            }
+        }
+
+        private readonly PlayersEnum _color;
+        /// <summary>
+        /// Player color
+        /// </summary>
+        public PlayersEnum Color
+        {
+            get
+            {
+                return _color;
+            }
+        }
+
+        /// <summary>
+        /// Zjistit tah hrace.
+        /// </summary>
+        /// <returns></returns>
         public virtual Move GetMove()
         {
             throw new NotImplementedException();

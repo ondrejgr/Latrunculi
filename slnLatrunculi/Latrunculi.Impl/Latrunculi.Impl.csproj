@@ -49,6 +49,7 @@
     <Compile Include="Game\Game.cs" />
     <Compile Include="Board\LatrunculiBoard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rules\LatrunculiRules.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="latrunculi.snk" />

@@ -56,7 +56,32 @@ namespace LatrunculiConsole
 
             Console.WriteLine("Rozhraní hry {0} {1} bylo načteno.", Game.Title, Game.Version);
 
-            Game.RenderBoardRequest += Game_RenderBoardRequest;
+            Game.RenderBoard += Game_RenderBoard;
+            Game.RenderActivePlayer += Game_RenderActivePlayer;
+        }
+
+        private void SetupPlayers(Players players)
+        {
+            Console.WriteLine("Aktuální nastavení hráčů: {0}.", players);
+            Console.WriteLine("Zadejte nové nastavení hráčů v pořadí bílý, černý");
+            Console.WriteLine("  C0 - C2 = počítač (0-lehký), H0 = lidský hráč, Enter = žádná změna...");
+
+            string newSettings = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(newSettings))
+                Console.WriteLine("Nastavení hráčů nebylo změněno.");
+            else
+            {
+                try
+                {
+                    players.ParseFromString(newSettings);
+                    Console.WriteLine("Nové nastavení hráčů: {0}.", players);
+                }
+                catch (Exception exc)
+                {
+                    Console.WriteLine("CHYBA ! Změna nebyla provedena: {0}", exc.Message);
+                    SetupPlayers(players); // zkus znovu
+                }
+            }
         }
 
         /// <summary>
@@ -65,8 +90,10 @@ namespace LatrunculiConsole
         public void Run()
         {
             LoadGameLibrary();
-                       
-            Game.Run();
+
+            Players players = new Players();
+            SetupPlayers(players);
+            Game.Run(players, null);
         }
 
         /// <summary>
@@ -74,7 +101,7 @@ namespace LatrunculiConsole
         /// </summary>
         /// <param name="Sender"></param>
         /// <param name="Board"></param>
-        void Game_RenderBoardRequest(IGame Sender, Board Board)
+        void Game_RenderBoard(IGame Sender, Board Board)
         {
             Coord c = new Coord();
 
@@ -113,10 +140,22 @@ namespace LatrunculiConsole
             Console.WriteLine();
         }
 
+        void Game_RenderActivePlayer(IGame Sender, Player Player)
+        {
+            if (Player != null)
+            {
+                string typ = (Player is HumanPlayer) ? "lidský hráč" : "počítač";
+                Console.WriteLine("Aktuální hráč na tahu: {0} ({1}).", Player.Name, typ);
+            }
+        }
+
         public void Dispose()
         {
             if (Game != null)
-                Game.RenderBoardRequest -= Game_RenderBoardRequest;
+            {
+                Game.RenderBoard -= Game_RenderBoard;
+                Game.RenderActivePlayer -= Game_RenderActivePlayer;
+            }
 
             Game = null;
             hlib = null;
