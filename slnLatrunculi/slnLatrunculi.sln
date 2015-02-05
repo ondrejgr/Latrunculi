@@ -4,12 +4,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LatrunculiConsole", "LatrunculiConsole\LatrunculiConsole.csproj", "{80C73012-A72B-4896-8CE3-3106B671DB41}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7326A308-6CBB-4C66-A3D9-3716A7EA75F7} = {7326A308-6CBB-4C66-A3D9-3716A7EA75F7}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latrunculi.Common", "Latrunculi.Common\Latrunculi.Common.csproj", "{CCD542F1-B762-4ACC-AA6F-F848CA807D72}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latrunculi.UnitTests", "Latrunculi.UnitTests\Latrunculi.UnitTests.csproj", "{A19D2A6F-7609-43D1-96C5-C19713803000}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latrunculi.Impl", "Latrunculi.Impl\Latrunculi.Impl.csproj", "{7326A308-6CBB-4C66-A3D9-3716A7EA75F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latrunculi", "Latrunculi\Latrunculi.csproj", "{9C2854B1-25B1-42EA-A05B-B954DCF8ADA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +38,10 @@ Global
 		{7326A308-6CBB-4C66-A3D9-3716A7EA75F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7326A308-6CBB-4C66-A3D9-3716A7EA75F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7326A308-6CBB-4C66-A3D9-3716A7EA75F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C2854B1-25B1-42EA-A05B-B954DCF8ADA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C2854B1-25B1-42EA-A05B-B954DCF8ADA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C2854B1-25B1-42EA-A05B-B954DCF8ADA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C2854B1-25B1-42EA-A05B-B954DCF8ADA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

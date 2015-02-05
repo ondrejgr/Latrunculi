@@ -1,0 +1,28 @@
+﻿<Window x:Class="Latrunculi.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Latrunculi.ViewModels"
+        xmlns:lat="clr-namespace:Latrunculi"
+        Title="{Binding Title,Mode=OneWay}" Height="350" Width="525"
+        Closing="Window_Closing">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static lat:MainWindowCommands.ExitCommand}" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed"/>
+    </Window.CommandBindings>
+   
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+                
+        <Menu Grid.Row="1">
+            <MenuItem Header="_Soubor">
+                <MenuItem Command="{x:Static lat:MainWindowCommands.ExitCommand}"/>                
+            </MenuItem>
+        </Menu>
+    </Grid>
+</Window>

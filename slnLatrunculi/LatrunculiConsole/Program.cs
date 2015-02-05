@@ -15,6 +15,7 @@ namespace LatrunculiConsole
             {
                 using (LatrunculiUI ui = new LatrunculiUI())
                 {
+                    ui.LoadLibrary();
 
                 }
             }

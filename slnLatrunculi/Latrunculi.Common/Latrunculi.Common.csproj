@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Board.cs" />
     <Compile Include="Coord.cs" />
+    <Compile Include="IGame.cs" />
     <Compile Include="Pieces.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
