@@ -11,6 +11,8 @@ namespace Latrunculi
     /// </summary>
     public interface IGame
     {
+        event RenderBoardRequestEvent RenderBoardRequest;
+
         string Title
         {
             get;
@@ -20,5 +22,7 @@ namespace Latrunculi
         {
             get;
         }
+
+        void Run();
     }
 }

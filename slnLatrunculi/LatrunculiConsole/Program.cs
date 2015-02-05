@@ -13,10 +13,11 @@ namespace LatrunculiConsole
             Console.WriteLine("Latrunculi - desková hra");
             try
             {
+                // vlastni běh zabalen do objektu LatrunculiUI,
+                // abych se vyhnul statickym polim ve tride Program
                 using (LatrunculiUI ui = new LatrunculiUI())
                 {
-                    ui.LoadLibrary();
-
+                    ui.Run();
                 }
             }
             catch (Exception exc)

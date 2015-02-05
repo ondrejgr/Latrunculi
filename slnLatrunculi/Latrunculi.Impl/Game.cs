@@ -11,6 +11,10 @@ namespace Latrunculi.Impl
     /// </summary>
     public class Game: IGame
     {
+        public event RenderBoardRequestEvent RenderBoardRequest;
+
+        private Board Board = new LatrunculiBoard();
+
         public string Title
         {
             get
@@ -25,6 +29,18 @@ namespace Latrunculi.Impl
             {
                 return "1.0";
             }
+        }
+
+        private void OnRenderBoardRequest()
+        {
+            if (RenderBoardRequest != null)
+                RenderBoardRequest(this, Board);
+        }
+
+        public void Run()
+        {
+            Board.Init();
+            OnRenderBoardRequest();
         }
     }
 }

@@ -48,8 +48,9 @@
   <ItemGroup>
     <Compile Include="Board.cs" />
     <Compile Include="Coord.cs" />
+    <Compile Include="GameEvents.cs" />
     <Compile Include="IGame.cs" />
-    <Compile Include="Pieces.cs" />
+    <Compile Include="PiecesEnum.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
