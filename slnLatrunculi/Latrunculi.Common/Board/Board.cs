@@ -127,6 +127,21 @@ namespace Latrunculi
         }
 
         /// <summary>
+        /// Proved tah
+        /// </summary>
+        public void ApplyMove(Move move)
+        {
+            if (move == null)
+                throw new ArgumentNullException("move");
+
+            Coord src = move.Source;
+            Coord tar = move.Target;
+
+            this[src] = move.SourcePiece;
+            this[tar] = move.TargetPiece;
+        }
+
+        /// <summary>
         /// Pro ověření souřadnice zadané uživatelem.
         /// </summary>
         /// <param name="coord"></param>

@@ -21,6 +21,11 @@ namespace Latrunculi
             get;
         }
 
+        string CurrentPlayersSetting
+        {
+            get;
+        }
+
         string Title
         {
             get;
@@ -32,5 +37,7 @@ namespace Latrunculi
         }
 
         void Run(string playersSetting);
+        void RequestQuit();
+        void SetPlayersFromString(string newSettings);
     }
 }

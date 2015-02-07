@@ -135,71 +135,101 @@ namespace LatrunculiConsole
             if (Player == null)
                 throw new ArgumentNullException("Player");
 
-            string typ = (Player is HumanPlayer) ? "lidský hráč" : "počítač";
+            // vypis aktualniho hrace
+            bool isHuman = (Player is HumanPlayer);
+            string typ = isHuman ? "lidský hráč" : "počítač";
             Console.WriteLine("Aktuální hráč na tahu: {0} ({1}).", Player.Name, typ);
 
-            if (Player is HumanPlayer)
+            // zjistit tah hrace nebo umoznit ovladani programu pri tahu PC
+            string prompt;
+            if (isHuman)
             {
-                // zjistit tah od lidskeho hrace
                 ((HumanPlayer)Player).HumanMove = null;
+                prompt = "Zadejte svůj tah (př. A2A3) nebo řídicí příkaz (? pro nápovědu)...";
+            }
+            else
+                prompt = "Zadejte řídicí příkaz (? pro nápovědu) nebo Enter pro provedení tahu počítačem...";
 
-                string str;
-                Console.Write("Zadejte svůj tah (př. A2A3) nebo řídicí příkaz (? pro nápovědu)...");
-                str = Console.ReadLine();
+            string str;
+            Console.Write(prompt);
+            str = Console.ReadLine();
 
-                if (string.IsNullOrWhiteSpace(str))
-                    Console.WriteLine("CHYBA: Byl zadán prázdný řetězec.");
-                else
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                if (isHuman)
                 {
-                    char command = Char.ToUpper(str[0]);
-                    switch (command)
-                    {
-                        case '?':
-                            Console.WriteLine("Příkazy, které je možné zadat:");
-                            Console.WriteLine("    T = napoveda nejlepsiho tahu");
-                            Console.WriteLine("    R = znovu vykreslit hraci desku");
-                            Console.WriteLine("    X = ukoncit hru");
-                            break;
-                        case 'T':
-                            try
-                            {
-                                throw new NotImplementedException();
-                            }
-                            catch (Exception exc)
-                            {
-                                Console.WriteLine("CHYBA: Nejlepší tah nelze napovědět ! {0}", exc.Message);
-                            }
-                            break;
-                        case 'R':
-                            try
-                            {
-                                Game_RenderBoard(Sender);
-                            }
-                            catch (Exception exc)
-                            {
-                                Console.WriteLine("CHYBA: Desku se nepodařilo překreslit ! {0}", exc.Message);
-                            }
-                            break;
-                        case 'X':
-                            // vezme se vychozi hodnota ((HumanPlayer)Player).HumanMove = null;
-                            return;
-                        default:
-                            // jinak předpokládáme, že nejde o příkaz, ale byl zadán tah
+                    Console.WriteLine("CHYBA: Byl zadán prázdný řetězec.");
+                    Game_RenderActivePlayer(Sender, Player);
+                }
+            }
+            else
+            {
+                char command = Char.ToUpper(str[0]);
+                switch (command)
+                {
+                    case '?':
+                        Console.WriteLine("Příkazy, které je možné zadat:");
+                        Console.WriteLine("    T = napoveda nejlepsiho tahu");
+                        Console.WriteLine("    R = znovu vykreslit hraci desku");
+                        Console.WriteLine("    S = změnit nastavení hráčů");
+                        Console.WriteLine("    X = ukoncit hru");
+                        Game_RenderActivePlayer(Sender, Player);
+                        break;
+                    case 'T':
+                        try
+                        {
+                            throw new NotImplementedException();
+                        }
+                        catch (Exception exc)
+                        {
+                            Console.WriteLine("CHYBA: Nejlepší tah nelze napovědět ! {0}", exc.Message);
+                        }
+                        Game_RenderActivePlayer(Sender, Player);
+                        break;
+                    case 'S':
+                        string oldSettings = Game.CurrentPlayersSetting;
+                        try
+                        {
+                            string newSettings = GetPlayersSetting(oldSettings);
+                            if (oldSettings != newSettings)
+                                Game.SetPlayersFromString(newSettings);
+                        }
+                        catch (Exception exc)
+                        {
+                            Console.WriteLine("CHYBA: Nastavení hráčů nebylo změněno: {0}", exc.Message);
+                            Game.SetPlayersFromString(oldSettings);
+                        }
+                        Game_RenderActivePlayer(Sender, Player);
+                        break;
+                    case 'R':
+                        try
+                        {
+                            Game_RenderBoard(Sender);
+                        }
+                        catch (Exception exc)
+                        {
+                            Console.WriteLine("CHYBA: Desku se nepodařilo překreslit ! {0}", exc.Message);
+                        }
+                        Game_RenderActivePlayer(Sender, Player);
+                        break;
+                    case 'X':
+                        Game.RequestQuit();
+                        break;
+                    default:
+                        // jinak předpokládáme, že nejde o příkaz, ale byl zadán tah
+                        if (isHuman)
+                        {
                             try
                             {
                                 ((HumanPlayer)Player).HumanMove = Move.Parse(str, (Player.Color == GameColorsEnum.plrBlack) ? Pieces.pcBlack : Pieces.pcWhite);
-                                return;
                             }
                             catch (Exception exc)
                             {
                                 Console.WriteLine("Chyba zadání: {0}", exc.Message);
                             }
-                            break;
-                    }
+                        }
+                        break;
                 }
-
-                // opakovat zadani (doslo k chybe nebo byl zadan nektery z ridicich prikazu
-                Game_RenderActivePlayer(Sender, Player);
             }
         }
 

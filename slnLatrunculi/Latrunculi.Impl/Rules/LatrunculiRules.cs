@@ -15,8 +15,8 @@ namespace Latrunculi.Impl
 
         protected override bool OnIsMoveValid(Move move, GameColorsEnum color)
         {
-            // TODO: kontrola tahu
-            return false;
+            return Board.IsCoordValid(move.Source) &&
+                   Board.IsCoordValid(move.Target); // TODO check move by rules
         }
     }
 }

@@ -35,6 +35,17 @@ namespace Latrunculi
             }
         }
 
+        public override Move GetMove()
+        {
+            Coord src = new Coord();
+            Coord tar = new Coord();
+
+            src.Set("A1");
+            tar.Set("A2");
+
+            return new Move(src, tar, Pieces.pcNone, (Color == GameColorsEnum.plrBlack) ? Pieces.pcBlack : Pieces.pcWhite);
+        }
+
         public override string ToString()
         {
             return string.Format("C{0}", Level);

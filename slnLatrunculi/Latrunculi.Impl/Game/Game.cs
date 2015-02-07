@@ -50,12 +50,27 @@ namespace Latrunculi.Impl
             }
         }
 
+        public string CurrentPlayersSetting
+        {
+            get
+            {
+                if (Players != null)
+                    return Players.ToString();
+                else
+                    return null;
+            }
+        }
+
         private Player _activePlayer;
         private Player ActivePlayer
         {
             get
             {
                 return _activePlayer;
+            }
+            set 
+            {
+                _activePlayer = value;
             }
         }
 
@@ -99,6 +114,12 @@ namespace Latrunculi.Impl
                 GameOver(this, Winner);
         }
 
+        private bool quit_request = false;
+        public void RequestQuit()
+        {
+            quit_request = true;
+        }
+
         /// <summary>
         /// Spustit hru
         /// </summary>
@@ -109,34 +130,56 @@ namespace Latrunculi.Impl
             Rules.CheckPlayers(Players);
 
             // hrač na tahu - určí jej pravidla (začátek hry)
-            _activePlayer = Players.GetPlayerByColor(Rules.GetFirstActivePlayerColor()); 
+            ActivePlayer = Players.GetPlayerByColor(Rules.GetFirstActivePlayerColor()); 
             if (ActivePlayer == null)
                 throw new Exception("Nepodařilo se zjistit, který hráč je na tahu.");
 
             Board.Init();
-            OnRenderBoard();
 
-            Move move;
-            do
+            // smycka Manazera
+            while (true)
             {
-                OnRenderActivePlayer();
+                // vykresleni
+                OnRenderBoard();
 
-                move = ActivePlayer.GetMove();
-                if (move == null)
+                // zjisti tah
+                Move move;
+                bool isMoveValid;
+                do
                 {
-                    OnGameOver(this, null);
-                    return; // prazdny tah je signal pro ukonceni hry
-                }
-            } while ((ActivePlayer is HumanPlayer) && !Rules.IsMoveValid(move, ActivePlayer.Color));
+                    OnRenderActivePlayer();
+                    if (quit_request)
+                    {
+                        quit_request = false;
+                        OnGameOver(this, null);
+                        return; 
+                    }
+                    move = ActivePlayer.GetMove();
+
+                    // kontrola tahu rozhodcim
+                    isMoveValid = (ActivePlayer is ComputerPlayer) || Rules.IsMoveValid(move, ActivePlayer.Color);
+                    if (!isMoveValid)
+                        OnMoveInvalid(move);
+                } while (!isMoveValid);
+
+                // provedeni tahu deskou
+                Board.ApplyMove(move);
+
+                // zmenit hrace na tahu
+                if (ActivePlayer.Color == GameColorsEnum.plrBlack)
+                    ActivePlayer = Players.GetPlayerByColor(GameColorsEnum.plrWhite);
+                else
+                    ActivePlayer = Players.GetPlayerByColor(GameColorsEnum.plrBlack);
+            }   
         }
 
         /// <summary>
         /// Zmenit nastaveni hracu podle retezce (pr. H0C1)
-        /// </summary>
         /// <param name="newSettings"></param>
         public void SetPlayersFromString(string newSettings)
         {
-            throw new NotImplementedException();
+            Players.SetFromString(newSettings);
+            Rules.CheckPlayers(Players);
         }
     }
 }

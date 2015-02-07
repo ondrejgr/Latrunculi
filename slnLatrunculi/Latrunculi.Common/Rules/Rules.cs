@@ -8,7 +8,7 @@ namespace Latrunculi
 {
     public abstract class Rules
     {
-        private Board Board;
+        protected Board Board;
 
         public Rules(Board board)
         {
