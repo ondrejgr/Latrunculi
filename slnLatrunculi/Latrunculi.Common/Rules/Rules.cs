@@ -8,13 +8,23 @@ namespace Latrunculi
 {
     public abstract class Rules
     {
+        private Board Board;
+
+        public Rules(Board board)
+        {
+            if (board == null)
+                throw new ArgumentNullException("board");
+
+            Board = board;
+        }
+
         /// <summary>
         /// Zjistit, kdo je první na tahu (při nové hře).
         /// </summary>
         /// <returns></returns>
-        public virtual PlayersEnum GetFirstActivePlayerColor()
+        public virtual GameColorsEnum GetFirstActivePlayerColor()
         {
-            return PlayersEnum.plrWhite;
+            return GameColorsEnum.plrWhite;
         }
 
         /// <summary>
@@ -31,6 +41,30 @@ namespace Latrunculi
 
             if (players.Player1.Color == players.Player2.Color)
                 throw new ArgumentException("Hráči nesmějí mít stejné barvy.", "players");
+        }
+
+        /// <summary>
+        /// Kontrola tahu podle pravidel.
+        /// </summary>
+        /// <param name="move"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public bool IsMoveValid(Move move, GameColorsEnum color)
+        {
+            if (move == null)
+                throw new ArgumentNullException("move");
+
+            return OnIsMoveValid(move, color); 
+        }
+
+        /// <summary>
+        /// Metoda, kterou je nutno overridovat vlastní implementací kontroly platnosti tahu.
+        /// </summary>
+        /// <param name="move"></param>
+        /// <param name="activeColor"></param>
+        protected virtual bool OnIsMoveValid(Move move, GameColorsEnum color)
+        {
+            throw new NotImplementedException();
         }
     }
 }

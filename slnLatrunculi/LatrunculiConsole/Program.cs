@@ -17,7 +17,7 @@ namespace LatrunculiConsole
                 // abych se vyhnul statickym polim ve tride Program
                 using (LatrunculiUI ui = new LatrunculiUI())
                 {
-                    ui.Run();
+                    ui.RunUI();
                 }
             }
             catch (Exception exc)
@@ -25,7 +25,7 @@ namespace LatrunculiConsole
                 Console.WriteLine();
                 Console.WriteLine(string.Format("CHYBA ! Při běhu aplikace došlo k výjimce: {0}", exc.Message));
             }
-            Console.WriteLine("Konec. Stiskněte Enter pro opuštění aplikace.");
+            Console.WriteLine("Stiskněte Enter pro opuštění aplikace.");
             Console.ReadLine();
         }
     }

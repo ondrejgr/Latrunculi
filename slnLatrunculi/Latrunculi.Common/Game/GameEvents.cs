@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Latrunculi
 {
-    public delegate void RenderBoardEvent(IGame Sender, Board Board);
+    public delegate void RenderBoardEvent(IGame Sender);
     public delegate void RenderActivePlayerEvent(IGame Sender, Player Player);
+    public delegate void MoveInvalidEvent(IGame Sender, Player Player, Move Move);
+    public delegate void GameOverEvent(IGame Sender, Player Winner);
 }

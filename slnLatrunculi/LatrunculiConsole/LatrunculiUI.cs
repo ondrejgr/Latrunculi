@@ -58,42 +58,24 @@ namespace LatrunculiConsole
 
             Game.RenderBoard += Game_RenderBoard;
             Game.RenderActivePlayer += Game_RenderActivePlayer;
+            Game.MoveInvalid += Game_MoveInvalid;
+            Game.GameOver += Game_GameOver;
         }
 
-        private void SetupPlayers(Players players)
+        private string GetPlayersSetting(string current)
         {
-            Console.WriteLine("Aktuální nastavení hráčů: {0}.", players);
+            Console.WriteLine("Aktuální nastavení hráčů: {0}.", current);
             Console.WriteLine("Zadejte nové nastavení hráčů v pořadí bílý, černý");
             Console.WriteLine("  C0 - C2 = počítač (0-lehký), H0 = lidský hráč, Enter = žádná změna...");
 
             string newSettings = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(newSettings))
-                Console.WriteLine("Nastavení hráčů nebylo změněno.");
-            else
             {
-                try
-                {
-                    players.ParseFromString(newSettings);
-                    Console.WriteLine("Nové nastavení hráčů: {0}.", players);
-                }
-                catch (Exception exc)
-                {
-                    Console.WriteLine("CHYBA ! Změna nebyla provedena: {0}", exc.Message);
-                    SetupPlayers(players); // zkus znovu
-                }
+                Console.WriteLine("Nastavení hráčů nebylo změněno.");
+                return current;
             }
-        }
-
-        /// <summary>
-        /// Spustit (UI loop)
-        /// </summary>
-        public void Run()
-        {
-            LoadGameLibrary();
-
-            Players players = new Players();
-            SetupPlayers(players);
-            Game.Run(players, null);
+            else
+                return newSettings;
         }
 
         /// <summary>
@@ -101,8 +83,14 @@ namespace LatrunculiConsole
         /// </summary>
         /// <param name="Sender"></param>
         /// <param name="Board"></param>
-        void Game_RenderBoard(IGame Sender, Board Board)
+        void Game_RenderBoard(IGame Sender)
         {
+            if (Sender == null)
+                throw new ArgumentNullException("Sender");
+            if (Sender.Board == null)
+                throw new ArgumentException("Objekt hrací deska není známý.");
+
+            Board Board = Sender.Board;
             Coord c = new Coord();
 
             Console.WriteLine();
@@ -142,11 +130,107 @@ namespace LatrunculiConsole
 
         void Game_RenderActivePlayer(IGame Sender, Player Player)
         {
-            if (Player != null)
+            if (Sender == null)
+                throw new ArgumentNullException("Sender");
+            if (Player == null)
+                throw new ArgumentNullException("Player");
+
+            string typ = (Player is HumanPlayer) ? "lidský hráč" : "počítač";
+            Console.WriteLine("Aktuální hráč na tahu: {0} ({1}).", Player.Name, typ);
+
+            if (Player is HumanPlayer)
             {
-                string typ = (Player is HumanPlayer) ? "lidský hráč" : "počítač";
-                Console.WriteLine("Aktuální hráč na tahu: {0} ({1}).", Player.Name, typ);
+                // zjistit tah od lidskeho hrace
+                ((HumanPlayer)Player).HumanMove = null;
+
+                string str;
+                Console.Write("Zadejte svůj tah (př. A2A3) nebo řídicí příkaz (? pro nápovědu)...");
+                str = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(str))
+                    Console.WriteLine("CHYBA: Byl zadán prázdný řetězec.");
+                else
+                {
+                    char command = Char.ToUpper(str[0]);
+                    switch (command)
+                    {
+                        case '?':
+                            Console.WriteLine("Příkazy, které je možné zadat:");
+                            Console.WriteLine("    T = napoveda nejlepsiho tahu");
+                            Console.WriteLine("    R = znovu vykreslit hraci desku");
+                            Console.WriteLine("    X = ukoncit hru");
+                            break;
+                        case 'T':
+                            try
+                            {
+                                throw new NotImplementedException();
+                            }
+                            catch (Exception exc)
+                            {
+                                Console.WriteLine("CHYBA: Nejlepší tah nelze napovědět ! {0}", exc.Message);
+                            }
+                            break;
+                        case 'R':
+                            try
+                            {
+                                Game_RenderBoard(Sender);
+                            }
+                            catch (Exception exc)
+                            {
+                                Console.WriteLine("CHYBA: Desku se nepodařilo překreslit ! {0}", exc.Message);
+                            }
+                            break;
+                        case 'X':
+                            // vezme se vychozi hodnota ((HumanPlayer)Player).HumanMove = null;
+                            return;
+                        default:
+                            // jinak předpokládáme, že nejde o příkaz, ale byl zadán tah
+                            try
+                            {
+                                ((HumanPlayer)Player).HumanMove = Move.Parse(str, (Player.Color == GameColorsEnum.plrBlack) ? Pieces.pcBlack : Pieces.pcWhite);
+                                return;
+                            }
+                            catch (Exception exc)
+                            {
+                                Console.WriteLine("Chyba zadání: {0}", exc.Message);
+                            }
+                            break;
+                    }
+                }
+
+                // opakovat zadani (doslo k chybe nebo byl zadan nektery z ridicich prikazu
+                Game_RenderActivePlayer(Sender, Player);
             }
+        }
+
+        void Game_MoveInvalid(IGame Sender, Player Player, Move Move)
+        {
+            Console.WriteLine("Zadaných tah {0} není podle pravidel platný !", Move);
+            // opakuj zadani tahu
+            Game_RenderActivePlayer(Sender, Player);
+        }
+
+        void Game_GameOver(IGame Sender, Player Winner)
+        {
+            if (Winner == null)
+                Console.WriteLine("Konec hry. Remíza.");
+            else
+            {
+                string typ = (Winner is HumanPlayer) ? "lidský hráč" : "počítač";
+                Console.WriteLine("Konec hry. Vítězem je: {0} ({1}).", Winner.Name, typ);
+            }
+        }
+
+        /// <summary>
+        /// Spustit (UI loop)
+        /// </summary>
+        public void RunUI()
+        {
+            LoadGameLibrary();
+
+            string playerSettings = GetPlayersSetting("H0C1");
+            Console.WriteLine("Spouštím hru.");
+            Game.Run(playerSettings);
         }
 
         public void Dispose()
@@ -155,6 +239,8 @@ namespace LatrunculiConsole
             {
                 Game.RenderBoard -= Game_RenderBoard;
                 Game.RenderActivePlayer -= Game_RenderActivePlayer;
+                Game.MoveInvalid -= Game_MoveInvalid;
+                Game.GameOver -= Game_GameOver;
             }
 
             Game = null;

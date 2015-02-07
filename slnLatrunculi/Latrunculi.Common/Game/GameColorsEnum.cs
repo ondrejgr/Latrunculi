@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Latrunculi
 {
-    public enum PlayersEnum
+    public enum GameColorsEnum
     {
         plrWhite,
         plrBlack

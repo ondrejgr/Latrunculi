@@ -8,5 +8,15 @@ namespace Latrunculi.Impl
 {
     public class LatrunculiRules: Rules
     {
+        public LatrunculiRules(Board board): base(board)
+        {
+            
+        }
+
+        protected override bool OnIsMoveValid(Move move, GameColorsEnum color)
+        {
+            // TODO: kontrola tahu
+            return false;
+        }
     }
 }

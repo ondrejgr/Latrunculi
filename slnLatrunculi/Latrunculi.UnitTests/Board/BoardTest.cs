@@ -26,7 +26,7 @@ namespace Latrunculi.UnitTests
         public void AccessUninitedBoard1()
         {
             Board b = new Latrunculi.Impl.LatrunculiBoard();
-            b[Coord.Build("A1")] = Pieces.pcBlack;
+            b[Coord.Parse("A1")] = Pieces.pcBlack;
         }
 
         [TestMethod]
@@ -34,7 +34,7 @@ namespace Latrunculi.UnitTests
         public void AccessUninitedBoard2()
         {
             Board b = new Latrunculi.Impl.LatrunculiBoard();
-            Pieces p = b[Coord.Build("A1")];
+            Pieces p = b[Coord.Parse("A1")];
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace Latrunculi.UnitTests
         {
             Board b = new Latrunculi.Impl.LatrunculiBoard();
             b.Init();
-            Pieces p = b[Coord.Build("I4")];
+            Pieces p = b[Coord.Parse("I4")];
         }
 
         [TestMethod]
@@ -52,7 +52,7 @@ namespace Latrunculi.UnitTests
         {
             Board b = new Latrunculi.Impl.LatrunculiBoard();
             b.Init();
-            b[Coord.Build("I4")] = Pieces.pcWhite;
+            b[Coord.Parse("I4")] = Pieces.pcWhite;
         }
 
         [TestMethod]
@@ -61,20 +61,20 @@ namespace Latrunculi.UnitTests
             Board b = new Latrunculi.Impl.LatrunculiBoard();
             b.Init();
 
-            Coord c = Coord.Build("F2");
+            Coord c = Coord.Parse("F2");
             Pieces p = Pieces.pcBlack;
             b[c] = p;
             Assert.AreEqual(p, b[c]);
             
-            c = Coord.Build("C4");
+            c = Coord.Parse("C4");
             b[c] = p;
             Assert.AreEqual(p, b[c]);
 
-            c = Coord.Build("H7");
+            c = Coord.Parse("H7");
             b[c] = p;
             Assert.AreEqual(p, b[c]);
 
-            c = Coord.Build("A1");
+            c = Coord.Parse("A1");
             b[c] = p;
             Assert.AreEqual(p, b[c]);
         }
@@ -103,14 +103,14 @@ namespace Latrunculi.UnitTests
             Board b = new Latrunculi.Impl.LatrunculiBoard();
             b.Init();
 
-            Coord c1 = Coord.Build("A1");
+            Coord c1 = Coord.Parse("A1");
             Pieces p = Pieces.pcWhite;
             b[c1] = p;
 
-            Coord c2 = Coord.Build("H7");
+            Coord c2 = Coord.Parse("H7");
             b[c2] = p;
 
-            Coord c3 = Coord.Build("G5");
+            Coord c3 = Coord.Parse("G5");
             b[c3] = p;
 
             b.Init();

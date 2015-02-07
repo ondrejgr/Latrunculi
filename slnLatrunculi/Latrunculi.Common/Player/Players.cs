@@ -16,6 +16,8 @@ namespace Latrunculi
             }
         }
 
+        private Board _board;
+
         private Player _player1;
         public Player Player1
         {
@@ -42,7 +44,11 @@ namespace Latrunculi
             }
         }
 
-        public void ParseFromString(string newSettings)
+        /// <summary>
+        /// Nastavit nastaveni hracu z retezce
+        /// </summary>
+        /// <param name="newSettings"></param>
+        public void SetFromString(string newSettings)
         {
             if (string.IsNullOrWhiteSpace(newSettings))
                 throw new ArgumentException("Neplatné nastavení hráčů.");
@@ -60,7 +66,7 @@ namespace Latrunculi
             switch (type)
             {
                 case 'H':
-                    NewPlayer1 = new HumanPlayer(PlayersEnum.plrWhite);
+                    NewPlayer1 = new HumanPlayer(GameColorsEnum.plrWhite);
                     break;
                 case 'C':
                     try
@@ -73,7 +79,7 @@ namespace Latrunculi
                     {
                         throw new ArgumentException("Neplatné nastavení obtížnosti bílého hráče: očekávám 0 - 2.");
                     }
-                    NewPlayer1 = new ComputerPlayer(PlayersEnum.plrWhite, level);
+                    NewPlayer1 = new ComputerPlayer(GameColorsEnum.plrWhite, _board, level);
                     break;
                 default:
                     throw new ArgumentException("Neplatný znak v nastavení bílého hráče: očekávám H nebo C.");
@@ -83,7 +89,7 @@ namespace Latrunculi
             switch (type)
             {
                 case 'H':
-                    NewPlayer2 = new HumanPlayer(PlayersEnum.plrBlack);
+                    NewPlayer2 = new HumanPlayer(GameColorsEnum.plrBlack);
                     break;
                 case 'C':
                     try
@@ -96,7 +102,7 @@ namespace Latrunculi
                     {
                         throw new ArgumentException("Neplatné nastavení obtížnosti bílého hráče: očekávám 0 - 2.");
                     }
-                    NewPlayer2 = new ComputerPlayer(PlayersEnum.plrBlack, level);
+                    NewPlayer2 = new ComputerPlayer(GameColorsEnum.plrBlack, _board, level);
                     break;
                 default:
                     throw new ArgumentException("Neplatný znak v nastavení černého hráče: očekávám H nebo C.", "newSettings");
@@ -107,7 +113,7 @@ namespace Latrunculi
             Player2 = NewPlayer2;
         }
 
-        public Player GetPlayerByColor(PlayersEnum color)
+        public Player GetPlayerByColor(GameColorsEnum color)
         {
             if (Player1 != null && Player1.Color == color)
                 return Player1;
@@ -117,15 +123,16 @@ namespace Latrunculi
                 return null;
         }
 
-        public Players(Player player1, Player player2)
+        /// <summary>
+        /// Vytvarit instanci nastaveni hracu.
+        /// </summary>
+        /// <param name="board">Kvuli PC hraci a jeho mozku.</param>
+        public Players(Board board)
         {
-            if (player1 == null)
-                throw new ArgumentNullException("player1");
-            if (player2 == null)
-                throw new ArgumentNullException("player2");
+            if (board == null)
+                throw new ArgumentNullException("board");
 
-            _player1 = player1;
-            _player2 = player2;
+            _board = board;
         }
 
         public override string ToString()
@@ -139,12 +146,6 @@ namespace Latrunculi
                 p2 = Player2.ToString();
 
             return string.Concat(p1, p2);
-        }
-
-        public Players()
-            : this(new HumanPlayer(PlayersEnum.plrWhite), new ComputerPlayer(PlayersEnum.plrBlack))
-        {
-
         }
     }
 }

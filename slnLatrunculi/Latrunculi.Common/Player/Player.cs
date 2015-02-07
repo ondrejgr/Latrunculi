@@ -11,7 +11,7 @@ namespace Latrunculi
     /// </summary>
     public abstract class Player
     {
-        public Player(PlayersEnum color)
+        public Player(GameColorsEnum color)
         {
             _color = color;
         }
@@ -22,7 +22,7 @@ namespace Latrunculi
             {
                 switch (Color)
                 {
-                    case PlayersEnum.plrBlack:
+                    case GameColorsEnum.plrBlack:
                         return "černý";
                     default:
                         return "bílý";
@@ -30,11 +30,11 @@ namespace Latrunculi
             }
         }
 
-        private readonly PlayersEnum _color;
+        private readonly GameColorsEnum _color;
         /// <summary>
         /// Player color
         /// </summary>
-        public PlayersEnum Color
+        public GameColorsEnum Color
         {
             get
             {

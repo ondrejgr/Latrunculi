@@ -15,49 +15,49 @@ namespace Latrunculi.UnitTests
         [ExpectedException(typeof(ArgumentException))]
         public void CoordEmpty()
         {
-            Coord x = Coord.Build("  ");
+            Coord x = Coord.Parse("  ");
         }
              
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void CoordInvalid1()
         {
-            Coord x = Coord.Build("abc");
+            Coord x = Coord.Parse("abc");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void CoordInvalid2()
         {
-            Coord x = Coord.Build("ax");
+            Coord x = Coord.Parse("ax");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void CoordInvalid3()
         {
-            Coord x = Coord.Build("!5");
+            Coord x = Coord.Parse("!5");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void CoordInvalid4()
         {
-            Coord x = Coord.Build("!99");
+            Coord x = Coord.Parse("!99");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void CoordInvalid5()
         {
-            Coord x = Coord.Build("A99");
+            Coord x = Coord.Parse("A99");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void CoordInvalid6()
         {
-            Coord x = Coord.Build("ZZ1");
+            Coord x = Coord.Parse("ZZ1");
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace Latrunculi.UnitTests
         {
             Coord c;
 
-            c = Coord.Build("a1");
+            c = Coord.Parse("a1");
             c.Set("B4");
 
             for (char x = 'A'; x <= 'Z'; x++)

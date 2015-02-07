@@ -13,6 +13,13 @@ namespace Latrunculi
     {
         event RenderBoardEvent RenderBoard;
         event RenderActivePlayerEvent RenderActivePlayer;
+        event MoveInvalidEvent MoveInvalid;
+        event GameOverEvent GameOver;
+
+        Board Board
+        {
+            get;
+        }
 
         string Title
         {
@@ -24,6 +31,6 @@ namespace Latrunculi
             get;
         }
 
-        void Run(Players players, Player activePlayer);
+        void Run(string playersSetting);
     }
 }

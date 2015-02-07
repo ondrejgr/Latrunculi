@@ -8,9 +8,20 @@ namespace Latrunculi
 {
     public class HumanPlayer: Player
     {
-        public HumanPlayer(PlayersEnum color)
+        public Move HumanMove
+        {
+            get;
+            set;
+        }
+
+        public HumanPlayer(GameColorsEnum color)
             : base(color)
         {
+        }
+
+        public override Move GetMove()
+        {
+            return HumanMove;
         }
 
         public override string ToString()

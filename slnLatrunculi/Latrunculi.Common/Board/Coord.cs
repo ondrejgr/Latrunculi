@@ -86,10 +86,16 @@ namespace Latrunculi
         }
 
         public override string ToString()
-        {
+        { 
             return string.Format("{0}{1}", _x, _y);
         }
 
+        /// <summary>
+        /// Pro overeni rozsahu hodnot v methodach Set
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         static private bool IsValidCoord(char x, byte y)
         {
             if (!Char.IsUpper(x))
@@ -98,14 +104,25 @@ namespace Latrunculi
                    y >= 1 && y <= 9;
         }
 
-        static public Coord Build(char x, byte y)
+        /// <summary>
+        /// Vytvorit Coord
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        static public Coord Create(char x, byte y)
         {
             Coord c = new Coord();
             c.Set(x, y);
             return c;
         }
 
-        static public Coord Build(string coord)
+        /// <summary>
+        /// Vytvorit Coord z retezce.
+        /// </summary>
+        /// <param name="coord"></param>
+        /// <returns></returns>
+        static public Coord Parse(string coord)
         {
             Coord c = new Coord();
             c.Set(coord);

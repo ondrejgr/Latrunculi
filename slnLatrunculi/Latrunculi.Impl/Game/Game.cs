@@ -13,9 +13,18 @@ namespace Latrunculi.Impl
     {
         public event RenderBoardEvent RenderBoard;
         public event RenderActivePlayerEvent RenderActivePlayer;
+        public event MoveInvalidEvent MoveInvalid;
+        public event GameOverEvent GameOver;
 
-        private readonly Board _board = new LatrunculiBoard();
-        private Board Board
+        public Game()
+        {
+            _board = new LatrunculiBoard();
+            _rules = new LatrunculiRules(_board);
+            _players = new Players(_board);
+        }
+
+        private readonly Board _board;
+        public Board Board
         {
             get
             {
@@ -23,7 +32,7 @@ namespace Latrunculi.Impl
             }
         }
 
-        private readonly Rules _rules = new LatrunculiRules();
+        private readonly Rules _rules;
         private Rules Rules
         {
             get
@@ -69,7 +78,7 @@ namespace Latrunculi.Impl
         protected virtual void OnRenderBoard()
         {
             if (RenderBoard != null)
-                RenderBoard(this, Board);
+                RenderBoard(this);
         }
 
         protected virtual void OnRenderActivePlayer()
@@ -78,24 +87,56 @@ namespace Latrunculi.Impl
                 RenderActivePlayer(this, ActivePlayer);
         }
 
+        protected virtual void OnMoveInvalid(Move Move)
+        {
+            if (MoveInvalid != null)
+                MoveInvalid(this, ActivePlayer, Move);
+        }
+
+        protected virtual void OnGameOver(IGame Sender, Player Winner)
+        {
+            if (GameOver != null)
+                GameOver(this, Winner);
+        }
+
         /// <summary>
         /// Spustit hru
         /// </summary>
-        /// <param name="players">Nastaveni hracu</param>
-        public void Run(Players players, Player activePlayer)
+        public void Run(string playersSetting)
         {
-            Rules.CheckPlayers(players);
-            _players = players;
+            // nastavit hrace
+            Players.SetFromString(playersSetting);
+            Rules.CheckPlayers(Players);
 
-            if (activePlayer == null)
-                activePlayer = players.GetPlayerByColor(Rules.GetFirstActivePlayerColor());
-            _activePlayer = activePlayer;
+            // hrač na tahu - určí jej pravidla (začátek hry)
+            _activePlayer = Players.GetPlayerByColor(Rules.GetFirstActivePlayerColor()); 
             if (ActivePlayer == null)
                 throw new Exception("Nepodařilo se zjistit, který hráč je na tahu.");
 
             Board.Init();
             OnRenderBoard();
-            OnRenderActivePlayer();
+
+            Move move;
+            do
+            {
+                OnRenderActivePlayer();
+
+                move = ActivePlayer.GetMove();
+                if (move == null)
+                {
+                    OnGameOver(this, null);
+                    return; // prazdny tah je signal pro ukonceni hry
+                }
+            } while ((ActivePlayer is HumanPlayer) && !Rules.IsMoveValid(move, ActivePlayer.Color));
+        }
+
+        /// <summary>
+        /// Zmenit nastaveni hracu podle retezce (pr. H0C1)
+        /// </summary>
+        /// <param name="newSettings"></param>
+        public void SetPlayersFromString(string newSettings)
+        {
+            throw new NotImplementedException();
         }
     }
 }

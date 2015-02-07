@@ -8,11 +8,16 @@ namespace Latrunculi
 {
     public class ComputerPlayer : Player
     {
-        public ComputerPlayer(PlayersEnum color, int level = 1)
+        public ComputerPlayer(GameColorsEnum color, Board board, int level = 1)
             : base(color)
         {
+            if (board == null)
+                throw new ArgumentNullException("board");
+            Board = board;
             Level = level;
         }
+
+        private Board Board;
 
         private int _level;
         /// <summary>
