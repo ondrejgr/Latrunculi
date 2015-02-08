@@ -48,7 +48,9 @@
   <ItemGroup>
     <Compile Include="Board\Board.cs" />
     <Compile Include="Board\Coord.cs" />
+    <Compile Include="Board\CoordDirectionEnum.cs" />
     <Compile Include="Board\Move.cs" />
+    <Compile Include="Board\Moves.cs" />
     <Compile Include="Board\PiecesEnum.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Game\GameColorsEnum.cs" />

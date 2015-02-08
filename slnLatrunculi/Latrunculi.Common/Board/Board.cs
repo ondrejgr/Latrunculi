@@ -53,6 +53,39 @@ namespace Latrunculi
         }
 
         /// <summary>
+        /// zjisti pocet kamenu dane barvy
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public int GetNumberOfPieces(GameColorsEnum color)
+        {
+            Coord c = new Coord();
+            int result = 0;
+
+            for (char x = 'A'; x <= MaxX; x++)
+            {
+                for (byte y = 1; y <= MaxY; y++)
+                {
+                    c.Set(x, y);
+
+                    switch(color)
+                    {
+                        case GameColorsEnum.plrBlack:
+                            if (this[c] == Pieces.pcBlack || this[c] == Pieces.pcBlackKing)
+                                result++;
+                            break;
+                        case GameColorsEnum.plrWhite:
+                            if (this[c] == Pieces.pcWhite || this[c] == Pieces.pcWhiteKing)
+                                result++;
+                            break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Přetížit pro nastavení max. hodnoty první souřadnice
         /// </summary>
         public virtual char MaxX
@@ -150,6 +183,41 @@ namespace Latrunculi
         {
             return (coord.x >= 'A' && coord.x <= MaxX) &&
                    (coord.y >= 1 && coord.y <= MaxY);
+        }
+
+        /// <summary>
+        /// Ziska posunutou souradnici. Za okraj desky nedovoli jit a vraci null.
+        /// Podporuje zatim pouze ortogonalni smery.
+        /// </summary>
+        /// <param name="current"></param>
+        /// <returns></returns>
+        public Coord? GetRelativeCoord(Coord current, CoordDirectionEnum direction)
+        {
+            int deltaX = 0;
+            int deltaY = 0;
+
+            switch (direction)
+            {
+                case CoordDirectionEnum.deForward:
+                    deltaY = 1;
+                    break;
+                case CoordDirectionEnum.deAft:
+                    deltaY = -1;
+                    break;
+                case CoordDirectionEnum.deLeft:
+                    deltaX = -1;
+                    break;
+                case CoordDirectionEnum.deRight:
+                    deltaX = 1;
+                    break;
+            }
+
+            if ((current.x + deltaX) > MaxX || (current.x + deltaX) < 'A')
+                return null;
+            else if ((current.y + deltaY) > MaxY || (current.y + deltaY) < 1)
+                return null;
+            else
+                return Coord.Create((char)(current.x + deltaX), (byte)(current.y + deltaY));
         }
     }
 }

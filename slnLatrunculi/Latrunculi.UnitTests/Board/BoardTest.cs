@@ -119,5 +119,61 @@ namespace Latrunculi.UnitTests
             Assert.AreEqual(Pieces.pcBlack, b[c2]);
             Assert.AreEqual(Pieces.pcNone, b[c3]);
         }
+
+        [TestMethod]
+        public void GetRelativeCoordTest1()
+        {
+            Board b = new Latrunculi.Impl.LatrunculiBoard();
+            b.Init();
+
+            Coord? result;
+
+            Coord c = Coord.Parse("B2");
+            Coord c_f = Coord.Parse("B3");
+            Coord c_a = Coord.Parse("B1");
+            Coord c_l = Coord.Parse("A2");
+            Coord c_r = Coord.Parse("C2");
+
+            result = b.GetRelativeCoord(c, CoordDirectionEnum.deForward);
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(c_f, result.Value);
+
+            result = b.GetRelativeCoord(c, CoordDirectionEnum.deAft);
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(c_a, result.Value);
+
+            result = b.GetRelativeCoord(c, CoordDirectionEnum.deLeft);
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(c_l, result.Value);
+
+            result = b.GetRelativeCoord(c, CoordDirectionEnum.deRight);
+            Assert.AreEqual(c_r, result.Value);
+        }
+
+        [TestMethod]
+        public void GetRelativeCoordTest2()
+        {
+            Board b = new Latrunculi.Impl.LatrunculiBoard();
+            b.Init();
+
+            Coord? result;
+
+            Coord c = Coord.Parse("A1");
+            Coord c_f = Coord.Parse("A2");
+            Coord c_r = Coord.Parse("B1");
+
+            result = b.GetRelativeCoord(c, CoordDirectionEnum.deForward);
+            Assert.IsTrue(result.HasValue);
+            Assert.AreEqual(c_f, result.Value);
+
+            result = b.GetRelativeCoord(c, CoordDirectionEnum.deAft);
+            Assert.IsFalse(result.HasValue);
+
+            result = b.GetRelativeCoord(c, CoordDirectionEnum.deLeft);
+            Assert.IsFalse(result.HasValue);
+
+            result = b.GetRelativeCoord(c, CoordDirectionEnum.deRight);
+            Assert.AreEqual(c_r, result.Value);
+        }
     }
 }

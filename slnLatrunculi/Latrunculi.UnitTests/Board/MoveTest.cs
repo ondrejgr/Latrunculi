@@ -41,5 +41,41 @@ namespace Latrunculi.UnitTests
         {
             Move.Parse("00a1", Pieces.pcNone);
         }
+
+        [TestMethod]
+        public void MoveEqual1()
+        {
+            Coord c1 = Coord.Parse("a1");
+            Coord c2 = Coord.Parse("b6");
+            Pieces s = Pieces.pcWhite, t = Pieces.pcBlack;
+
+            Move m1 = new Move(c1, c2, s, t);
+            Move m2 = new Move(c1, c2, s, t);
+
+            c2.Set("b7");
+            m2 = new Move(c1, c2, s, t);
+            Assert.AreNotEqual(m1, m2);
+        }
+
+        [TestMethod]
+        public void MoveEqual2()
+        {
+            Coord c1 = Coord.Parse("a1");
+            Coord c2 = Coord.Parse("b6");
+            Pieces s = Pieces.pcWhite, t = Pieces.pcBlack;
+
+            Move m1 = new Move(c1, c2, s, t);
+            Move m2 = new Move(c1, c2, s, t);
+
+            m2 = new Move(c1, c2, s, t);
+            Assert.AreEqual(m1, m2);
+
+            // zamerne - RemovedPiecesCoords se nepouziva pro porovnani tahu
+            m1.RemovedPiecesCoords.Add(Coord.Parse("c1"));
+            Assert.AreEqual(m1, m2);
+
+            m2.RemovedPiecesCoords.Add(Coord.Parse("c1"));
+            Assert.AreEqual(m1, m2);
+        }
     }
 }

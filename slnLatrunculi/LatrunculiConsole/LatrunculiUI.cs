@@ -138,6 +138,7 @@ namespace LatrunculiConsole
             // vypis aktualniho hrace
             bool isHuman = (Player is HumanPlayer);
             string typ = isHuman ? "lidský hráč" : "počítač";
+            Console.WriteLine();
             Console.WriteLine("Aktuální hráč na tahu: {0} ({1}).", Player.Name, typ);
 
             // zjistit tah hrace nebo umoznit ovladani programu pri tahu PC
@@ -159,7 +160,7 @@ namespace LatrunculiConsole
                 if (isHuman)
                 {
                     Console.WriteLine("CHYBA: Byl zadán prázdný řetězec.");
-                    Game_RenderActivePlayer(Sender, Player);
+                    Game.RequestControlLoopReset();
                 }
             }
             else
@@ -173,7 +174,7 @@ namespace LatrunculiConsole
                         Console.WriteLine("    R = znovu vykreslit hraci desku");
                         Console.WriteLine("    S = změnit nastavení hráčů");
                         Console.WriteLine("    X = ukoncit hru");
-                        Game_RenderActivePlayer(Sender, Player);
+                        Game.RequestControlLoopReset();
                         break;
                     case 'T':
                         try
@@ -184,7 +185,7 @@ namespace LatrunculiConsole
                         {
                             Console.WriteLine("CHYBA: Nejlepší tah nelze napovědět ! {0}", exc.Message);
                         }
-                        Game_RenderActivePlayer(Sender, Player);
+                        Game.RequestControlLoopReset();
                         break;
                     case 'S':
                         string oldSettings = Game.CurrentPlayersSetting;
@@ -199,7 +200,7 @@ namespace LatrunculiConsole
                             Console.WriteLine("CHYBA: Nastavení hráčů nebylo změněno: {0}", exc.Message);
                             Game.SetPlayersFromString(oldSettings);
                         }
-                        Game_RenderActivePlayer(Sender, Player);
+                        Game.RequestControlLoopReset();
                         break;
                     case 'R':
                         try
@@ -210,7 +211,7 @@ namespace LatrunculiConsole
                         {
                             Console.WriteLine("CHYBA: Desku se nepodařilo překreslit ! {0}", exc.Message);
                         }
-                        Game_RenderActivePlayer(Sender, Player);
+                        Game.RequestControlLoopReset();
                         break;
                     case 'X':
                         Game.RequestQuit();
@@ -236,8 +237,6 @@ namespace LatrunculiConsole
         void Game_MoveInvalid(IGame Sender, Player Player, Move Move)
         {
             Console.WriteLine("Zadaných tah {0} není podle pravidel platný !", Move);
-            // opakuj zadani tahu
-            Game_RenderActivePlayer(Sender, Player);
         }
 
         void Game_GameOver(IGame Sender, Player Winner)

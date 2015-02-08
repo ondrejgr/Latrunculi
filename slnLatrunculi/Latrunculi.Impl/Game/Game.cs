@@ -61,16 +61,24 @@ namespace Latrunculi.Impl
             }
         }
 
-        private Player _activePlayer;
-        private Player ActivePlayer
+        private GameColorsEnum _activePlayerColor;
+        private GameColorsEnum ActivePlayerColor
         {
             get
             {
-                return _activePlayer;
+                return _activePlayerColor;
             }
             set 
             {
-                _activePlayer = value;
+                _activePlayerColor = value;
+            }
+        }
+
+        public Player ActivePlayer
+        {
+            get
+            {
+                return Players.GetPlayerByColor(ActivePlayerColor);
             }
         }
 
@@ -114,10 +122,47 @@ namespace Latrunculi.Impl
                 GameOver(this, Winner);
         }
 
-        private bool quit_request = false;
+        private bool quit_requested = false;
         public void RequestQuit()
         {
-            quit_request = true;
+            quit_requested = true;
+        }
+
+        private bool control_loop_reset_requested = false;
+        public void RequestControlLoopReset()
+        {
+            control_loop_reset_requested = true;
+        }
+
+        /// <summary>
+        /// Vyvolat vyjimku pokud je pozadovano
+        /// </summary>
+        private void AssertControlLoopCommands()
+        {
+            if (control_loop_reset_requested)
+            {
+                control_loop_reset_requested = false;
+                throw new ControlLoopResetRequestedException();
+            }
+            if (quit_requested)
+            {
+                quit_requested = false;
+                throw new ControlLoopQuitException();
+            }
+        }
+
+        /// <summary>
+        /// Ukoncit hry a zobrazit viteze.
+        /// </summary>
+        private void EndGame()
+        {
+            Player winner = null;
+            GameColorsEnum? winnerColor = Rules.GetWinner();
+
+            if (winnerColor.HasValue)
+                winner = Players.GetPlayerByColor(winnerColor.Value);
+
+            OnGameOver(this, winner);
         }
 
         /// <summary>
@@ -130,47 +175,60 @@ namespace Latrunculi.Impl
             Rules.CheckPlayers(Players);
 
             // hrač na tahu - určí jej pravidla (začátek hry)
-            ActivePlayer = Players.GetPlayerByColor(Rules.GetFirstActivePlayerColor()); 
-            if (ActivePlayer == null)
-                throw new Exception("Nepodařilo se zjistit, který hráč je na tahu.");
+            ActivePlayerColor = Rules.GetFirstActivePlayerColor(); 
 
             Board.Init();
 
             // smycka Manazera
-            while (true)
+            try
             {
-                // vykresleni
-                OnRenderBoard();
-
-                // zjisti tah
-                Move move;
-                bool isMoveValid;
-                do
+                while (true)
                 {
-                    OnRenderActivePlayer();
-                    if (quit_request)
+                    // vykresleni
+                    OnRenderBoard();
+
+                    // zjisti tah
+                    Move move = null;
+                    bool isMoveValid;
+                    do
                     {
-                        quit_request = false;
-                        OnGameOver(this, null);
-                        return; 
-                    }
-                    move = ActivePlayer.GetMove();
+                        do
+                        {
+                            try
+                            {
+                                OnRenderActivePlayer();
+                                AssertControlLoopCommands();
 
-                    // kontrola tahu rozhodcim
-                    isMoveValid = (ActivePlayer is ComputerPlayer) || Rules.IsMoveValid(move, ActivePlayer.Color);
-                    if (!isMoveValid)
-                        OnMoveInvalid(move);
-                } while (!isMoveValid);
+                                move = ActivePlayer.GetMove();
+                                AssertControlLoopCommands();
+                                break;
+                            }
+                            catch (ControlLoopResetRequestedException)
+                            {
+                            }
+                        } while (true);
 
-                // provedeni tahu deskou
-                Board.ApplyMove(move);
+                        // kontrola tahu rozhodcim
+                        isMoveValid = (ActivePlayer is ComputerPlayer) || Rules.IsMoveValid(move, ActivePlayer.Color);
+                        if (!isMoveValid)
+                            OnMoveInvalid(move);
+                    } while (!isMoveValid);
 
-                // zmenit hrace na tahu
-                if (ActivePlayer.Color == GameColorsEnum.plrBlack)
-                    ActivePlayer = Players.GetPlayerByColor(GameColorsEnum.plrWhite);
-                else
-                    ActivePlayer = Players.GetPlayerByColor(GameColorsEnum.plrBlack);
-            }   
+                    // provedeni tahu deskou
+                    Board.ApplyMove(move);
+
+                    // zmenit hrace na tahu
+                    if (ActivePlayerColor == GameColorsEnum.plrBlack)
+                        ActivePlayerColor = GameColorsEnum.plrWhite;
+                    else
+                        ActivePlayerColor = GameColorsEnum.plrBlack;
+                }
+            }
+            catch (ControlLoopQuitException)
+            {
+                // ukoncit hru
+                EndGame();
+            }
         }
 
         /// <summary>

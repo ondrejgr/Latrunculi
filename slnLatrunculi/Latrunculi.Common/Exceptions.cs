@@ -30,7 +30,49 @@ namespace Latrunculi
         {
         }
     }
+    /********************/
+    [Serializable()]
+    public abstract class ControlLoopException : LatrunculiException
+    {
+        public ControlLoopException(string message)
+            : base(message)
+        {
+        }
 
+        protected ControlLoopException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
+    [Serializable()]
+    public class ControlLoopResetRequestedException : ControlLoopException
+    {
+        public ControlLoopResetRequestedException()
+            : base("Operaci nelze provést - byl vyžádán reset řídicí smyčky.")
+        {
+        }
+
+        protected ControlLoopResetRequestedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
+
+    [Serializable()]
+    public class ControlLoopQuitException : ControlLoopException
+    {
+        public ControlLoopQuitException()
+            : base("Operaci nelze provést - bylo vyžádáno ukončení aplikace.")
+        {
+        }
+
+        protected ControlLoopQuitException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
+
+/********************/
     [Serializable()]
     public class MoveInvalidException : LatrunculiException
     {
@@ -41,6 +83,20 @@ namespace Latrunculi
         }
 
         protected MoveInvalidException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
+
+    [Serializable()]
+    public class UnableToDeterminePlayerByColor : LatrunculiException
+    {
+        public UnableToDeterminePlayerByColor()
+            : base("Nepodařilo se nalézt hráče s požadovanou barvou.")
+        {
+        }
+
+        protected UnableToDeterminePlayerByColor(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

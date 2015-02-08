@@ -54,15 +54,29 @@ namespace Latrunculi
             if (move == null)
                 throw new ArgumentNullException("move");
 
-            return OnIsMoveValid(move, color); 
+            return Board.IsCoordValid(move.Source) && Board.IsCoordValid(move.Target) &&
+                GetValidMoves(color).Contains(move); 
         }
 
         /// <summary>
-        /// Metoda, kterou je nutno overridovat vlastní implementací kontroly platnosti tahu.
+        /// Vrat platne tahu podle barvy.
         /// </summary>
-        /// <param name="move"></param>
-        /// <param name="activeColor"></param>
-        protected virtual bool OnIsMoveValid(Move move, GameColorsEnum color)
+        /// <param name="color"></param>
+        public Moves GetValidMoves(GameColorsEnum color)
+        {
+            Moves moves = new Moves();
+
+            OnGetValidMoves(moves, color);
+
+            return moves;
+        }
+
+        protected virtual void OnGetValidMoves(Moves moves, GameColorsEnum color)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual GameColorsEnum? GetWinner()
         {
             throw new NotImplementedException();
         }

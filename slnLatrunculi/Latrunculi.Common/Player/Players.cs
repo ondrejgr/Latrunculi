@@ -120,7 +120,7 @@ namespace Latrunculi
             else if (Player2 != null && Player2.Color == color)
                 return Player2;
             else
-                return null;
+                throw new UnableToDeterminePlayerByColor();
         }
 
         /// <summary>

@@ -37,7 +37,10 @@ namespace Latrunculi
         }
 
         void Run(string playersSetting);
+        
         void RequestQuit();
+        void RequestControlLoopReset();
+
         void SetPlayersFromString(string newSettings);
     }
 }

@@ -35,15 +35,49 @@ namespace Latrunculi
             }
         }
 
+        Random r = new Random();
         public override Move GetMove()
         {
+            Moves moves = new Moves();
+            
+            Pieces tarPiece = (Color == GameColorsEnum.plrBlack) ? Pieces.pcBlack : Pieces.pcWhite;
+
             Coord src = new Coord();
-            Coord tar = new Coord();
 
-            src.Set("A1");
-            tar.Set("A2");
+            for (char x = 'A'; x <= Board.MaxX; x++)
+            {
+                for (byte y = 1; y <= Board.MaxY; y++)
+                {
+                    src.Set(x, y);
+                    if (((Color == GameColorsEnum.plrBlack) &&
+                        (Board[src] == Pieces.pcBlack || Board[src] == Pieces.pcBlackKing)) ||
+                        ((Color == GameColorsEnum.plrWhite) &&
+                        (Board[src] == Pieces.pcWhite || Board[src] == Pieces.pcWhiteKing)))
+                    {
+                        // barva figurky na danem miste patri hraci provadejicimu tah,
+                        // muzeme overit mozne tahy v ortogonalich smerech.
+                        // Pokud tam neni figurka a pokud to neni mimo desku, je tah dovoleny.
+                        Action<CoordDirectionEnum> addMoveIfValid = new Action<CoordDirectionEnum>((dir) =>
+                        {
+                            Coord? tar;
+                            tar = Board.GetRelativeCoord(src, dir);
+                            if (tar.HasValue && (Board[tar.Value] == Pieces.pcNone))
+                                moves.Add(new Move(src, tar.Value, Pieces.pcNone, tarPiece));
+                        }
+                        );
 
-            return new Move(src, tar, Pieces.pcNone, (Color == GameColorsEnum.plrBlack) ? Pieces.pcBlack : Pieces.pcWhite);
+                        addMoveIfValid(CoordDirectionEnum.deForward);
+                        addMoveIfValid(CoordDirectionEnum.deAft);
+                        addMoveIfValid(CoordDirectionEnum.deLeft);
+                        addMoveIfValid(CoordDirectionEnum.deRight);
+                    }
+                }
+            }
+
+            if (moves.Count == 0)
+                throw new InvalidOperationException("Žádné volné tahy !");
+
+            return moves[r.Next(0, moves.Count)];
         }
 
         public override string ToString()

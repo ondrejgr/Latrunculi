@@ -9,7 +9,7 @@ namespace Latrunculi
     /// <summary>
     /// Tah
     /// </summary>
-    public class Move
+    public class Move: IEquatable<Move>
     {
         public Coord Source
         {
@@ -21,6 +21,15 @@ namespace Latrunculi
         {
             get;
             private set;
+        }
+
+        private readonly List<Coord> _removedPiecesCoords = new List<Coord>();
+        public List<Coord> RemovedPiecesCoords
+        {
+            get
+            {
+                return _removedPiecesCoords;
+            }
         }
 
         public Pieces SourcePiece
@@ -78,6 +87,38 @@ namespace Latrunculi
             }
 
             return move;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !(obj is Move))
+                return false;
+            else
+            {
+                Move m = (Move)obj;
+                return Source.Equals(m.Source) &&
+                       Target.Equals(m.Target) &&
+                       (SourcePiece == m.SourcePiece) &&
+                       (TargetPiece == m.TargetPiece);
+                       //RemovedPiecesCoords.SequenceEqual(m.RemovedPiecesCoords);
+            }
+        }
+
+        public bool Equals(Move other)
+        {
+            return (other is Move) &&
+                       Source.Equals(other.Source) &&
+                       Target.Equals(other.Target) &&
+                       (SourcePiece == other.SourcePiece) &&
+                       (TargetPiece == other.TargetPiece);
+                       //RemovedPiecesCoords.SequenceEqual(other.RemovedPiecesCoords);
+        }
+
+        public override int GetHashCode()
+        {
+            return Source.GetHashCode() + 1000 * Target.GetHashCode()
+                    + 1000000 * SourcePiece.GetHashCode() + 10000000 * TargetPiece.GetHashCode();
+                    //+ 100000000 * RemovedPiecesCoords.GetHashCode(); // zamerne NE - RemovedPiecesCoords nema vliv na porovnani
         }
     }
 }
