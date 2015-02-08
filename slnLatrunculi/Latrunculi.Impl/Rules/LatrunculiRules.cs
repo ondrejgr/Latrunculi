@@ -50,6 +50,31 @@ namespace Latrunculi.Impl
             }
         }
 
+        protected override void OnSetPiecesToBeRemoved(Move move)
+        {
+            // zajeti v rozich
+            GameColorsEnum ownColor;
+            GameColorsEnum enemyColor;
+            Pieces enemyPiece;
+            if (move.TargetPiece == Pieces.pcBlack)
+            {
+                ownColor = GameColorsEnum.plrBlack;
+                enemyPiece = Pieces.pcWhite;
+            }
+            else if (move.TargetPiece == Pieces.pcWhite)
+            {
+                ownColor = GameColorsEnum.plrWhite;
+                enemyPiece = Pieces.pcBlack;
+            }
+            else 
+                return;
+
+            enemyColor = (ownColor == GameColorsEnum.plrWhite) ? GameColorsEnum.plrBlack : GameColorsEnum.plrWhite;
+
+            // TODO: impl determine pieces to be removed
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Zjisti viteze
         /// </summary>

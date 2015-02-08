@@ -80,5 +80,24 @@ namespace Latrunculi
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Nastav kameny, ktere budou odebrany
+        /// </summary>
+        /// <param name="move"></param>
+        public void SetPiecesToBeRemoved(Move move)
+        {
+            if (move == null)
+                throw new ArgumentNullException("move");
+
+            move.RemovedPiecesCoords.Clear();
+
+            OnSetPiecesToBeRemoved(move);
+        }
+
+        protected virtual void OnSetPiecesToBeRemoved(Move move)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

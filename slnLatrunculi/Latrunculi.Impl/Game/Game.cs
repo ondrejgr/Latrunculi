@@ -215,6 +215,7 @@ namespace Latrunculi.Impl
                     } while (!isMoveValid);
 
                     // provedeni tahu deskou
+                    Rules.SetPiecesToBeRemoved(move);
                     Board.ApplyMove(move);
 
                     // zmenit hrace na tahu
