@@ -172,6 +172,11 @@ namespace Latrunculi
 
             this[src] = move.SourcePiece;
             this[tar] = move.TargetPiece;
+
+            foreach(Coord c in move.RemovedPiecesCoords)
+            {
+                this[c] = Pieces.pcNone;
+            }
         }
 
         /// <summary>

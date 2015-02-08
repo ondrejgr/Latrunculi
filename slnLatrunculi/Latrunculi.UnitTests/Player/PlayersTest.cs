@@ -11,7 +11,8 @@ namespace Latrunculi.UnitTests
         public void EmptyPlayers()
         {
             Board b = new LatrunculiBoard();
-            Players p = new Players(b);
+            Rules rul = new LatrunculiRules(b);
+            Players p = new Players(b, rul);
             Assert.IsFalse(p.ArePlayersAssigned);
         }
 
@@ -19,7 +20,8 @@ namespace Latrunculi.UnitTests
         public void TestSettings1()
         {
             Board b = new LatrunculiBoard();
-            Players p = new Players(b);
+            Rules rul = new LatrunculiRules(b);
+            Players p = new Players(b, rul);
             p.SetFromString("H1C2");
 
             Assert.IsTrue(p.ArePlayersAssigned);
@@ -33,7 +35,8 @@ namespace Latrunculi.UnitTests
         public void TestSettings2()
         {
             Board b = new LatrunculiBoard();
-            Players p = new Players(b);
+            Rules rul = new LatrunculiRules(b);
+            Players p = new Players(b, rul);
             p.SetFromString("C1C2");
 
             Assert.IsTrue(p.ArePlayersAssigned);
@@ -48,7 +51,8 @@ namespace Latrunculi.UnitTests
         public void TestSettings3()
         {
             Board b = new LatrunculiBoard();
-            Players p = new Players(b);
+            Rules rul = new LatrunculiRules(b);
+            Players p = new Players(b, rul);
             p.SetFromString("H1H2");
 
             Assert.IsTrue(p.ArePlayersAssigned);
@@ -61,7 +65,8 @@ namespace Latrunculi.UnitTests
         public void TestSettings4()
         {
             Board b = new LatrunculiBoard();
-            Players p = new Players(b);
+            Rules rul = new LatrunculiRules(b);
+            Players p = new Players(b, rul);
             p.SetFromString("xxxxx");
         }
 
@@ -70,7 +75,8 @@ namespace Latrunculi.UnitTests
         public void TestSettings5()
         {
             Board b = new LatrunculiBoard();
-            Players p = new Players(b);
+            Rules rul = new LatrunculiRules(b);
+            Players p = new Players(b, rul);
             p.SetFromString("h0n2");
         }
     }

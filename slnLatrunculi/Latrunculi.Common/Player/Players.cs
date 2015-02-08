@@ -17,6 +17,7 @@ namespace Latrunculi
         }
 
         private Board _board;
+        private Rules _rules;
 
         private Player _player1;
         public Player Player1
@@ -79,7 +80,7 @@ namespace Latrunculi
                     {
                         throw new ArgumentException("Neplatné nastavení obtížnosti bílého hráče: očekávám 0 - 2.");
                     }
-                    NewPlayer1 = new ComputerPlayer(GameColorsEnum.plrWhite, _board, level);
+                    NewPlayer1 = new ComputerPlayer(GameColorsEnum.plrWhite, _board, _rules, level);
                     break;
                 default:
                     throw new ArgumentException("Neplatný znak v nastavení bílého hráče: očekávám H nebo C.");
@@ -102,7 +103,7 @@ namespace Latrunculi
                     {
                         throw new ArgumentException("Neplatné nastavení obtížnosti bílého hráče: očekávám 0 - 2.");
                     }
-                    NewPlayer2 = new ComputerPlayer(GameColorsEnum.plrBlack, _board, level);
+                    NewPlayer2 = new ComputerPlayer(GameColorsEnum.plrBlack, _board, _rules, level);
                     break;
                 default:
                     throw new ArgumentException("Neplatný znak v nastavení černého hráče: očekávám H nebo C.", "newSettings");
@@ -127,12 +128,15 @@ namespace Latrunculi
         /// Vytvarit instanci nastaveni hracu.
         /// </summary>
         /// <param name="board">Kvuli PC hraci a jeho mozku.</param>
-        public Players(Board board)
+        public Players(Board board, Rules rules)
         {
             if (board == null)
                 throw new ArgumentNullException("board");
+            if (rules == null)
+                throw new ArgumentNullException("rules");
 
             _board = board;
+            _rules = rules;
         }
 
         public override string ToString()

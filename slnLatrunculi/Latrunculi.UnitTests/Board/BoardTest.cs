@@ -56,6 +56,35 @@ namespace Latrunculi.UnitTests
         }
 
         [TestMethod]
+        public void ApplyMove1()
+        {
+            Board b = new Latrunculi.Impl.LatrunculiBoard();
+            b.Init();
+
+            Coord c1 = Coord.Parse("A1");
+            Coord c2 = Coord.Parse("A2");
+            Coord c3 = Coord.Parse("B1");
+            b[c1] = Pieces.pcBlack;
+            b[c3] = Pieces.pcBlack;
+
+            Move m = new Move(c1, c2, Pieces.pcNone, Pieces.pcBlack);
+
+            Assert.AreEqual(Pieces.pcBlack, b[c1]);
+            Assert.AreEqual(Pieces.pcBlack, b[c3]);
+ 
+            b.ApplyMove(m);
+            Assert.AreEqual(Pieces.pcNone, b[c1]);
+            Assert.AreEqual(Pieces.pcBlack, b[c2]);
+            Assert.AreEqual(Pieces.pcBlack, b[c3]);
+
+            m.RemovedPiecesCoords.Add(c3);
+            b.ApplyMove(m);
+            Assert.AreEqual(Pieces.pcNone, b[c1]);
+            Assert.AreEqual(Pieces.pcBlack, b[c2]);
+            Assert.AreEqual(Pieces.pcNone, b[c3]);
+        }
+
+        [TestMethod]
         public void AccessBoard1()
         {
             Board b = new Latrunculi.Impl.LatrunculiBoard();

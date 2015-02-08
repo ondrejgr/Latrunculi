@@ -20,7 +20,7 @@ namespace Latrunculi.Impl
         {
             _board = new LatrunculiBoard();
             _rules = new LatrunculiRules(_board);
-            _players = new Players(_board);
+            _players = new Players(_board, _rules);
         }
 
         private readonly Board _board;
