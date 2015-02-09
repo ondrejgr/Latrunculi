@@ -40,6 +40,7 @@ namespace Latrunculi
         
         void RequestQuit();
         void RequestControlLoopReset();
+        void RequestPossibleMovesHint(Coord src, GameColorsEnum color);
 
         void SetPlayersFromString(string newSettings);
     }

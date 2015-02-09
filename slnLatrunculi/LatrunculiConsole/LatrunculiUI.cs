@@ -170,13 +170,14 @@ namespace LatrunculiConsole
                 {
                     case '?':
                         Console.WriteLine("Příkazy, které je možné zadat:");
-                        Console.WriteLine("    T = napoveda nejlepsiho tahu");
+                        Console.WriteLine("    Y = napoveda nejlepsiho tahu");
+                        Console.WriteLine("    TA1 = zobrazit mozne tahy z policka A1");
                         Console.WriteLine("    R = znovu vykreslit hraci desku");
                         Console.WriteLine("    S = změnit nastavení hráčů");
                         Console.WriteLine("    X = ukoncit hru");
                         Game.RequestControlLoopReset();
                         break;
-                    case 'T':
+                    case 'Y':
                         try
                         {
                             throw new NotImplementedException();
@@ -186,6 +187,21 @@ namespace LatrunculiConsole
                             Console.WriteLine("CHYBA: Nejlepší tah nelze napovědět ! {0}", exc.Message);
                         }
                         Game.RequestControlLoopReset();
+                        break;
+                    case 'T':
+                        Coord c;
+                        try
+                        {
+                            string strcoord = str.Substring(1, 2);
+                            c = Coord.Parse(strcoord);
+                        }
+                        catch (Exception exc)
+                        {
+                            Console.WriteLine("CHYBA: Nelze zobrazit možné tahy ! {0}", exc.Message);
+                            Game.RequestControlLoopReset();
+                            return;
+                        }
+                        Game.RequestPossibleMovesHint(c, Player.Color);
                         break;
                     case 'S':
                         string oldSettings = Game.CurrentPlayersSetting;

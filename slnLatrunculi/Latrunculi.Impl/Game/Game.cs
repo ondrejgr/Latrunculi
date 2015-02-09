@@ -122,16 +122,22 @@ namespace Latrunculi.Impl
                 GameOver(this, Winner);
         }
 
-        private bool quit_requested = false;
-        public void RequestQuit()
-        {
-            quit_requested = true;
-        }
-
         private bool control_loop_reset_requested = false;
         public void RequestControlLoopReset()
         {
             control_loop_reset_requested = true;
+        }
+
+        private bool possible_moves_hint_requested = false;
+        public void RequestPossibleMovesHint(Coord src, GameColorsEnum color)
+        {
+            possible_moves_hint_requested = true;
+        }
+
+        private bool quit_requested = false;
+        public void RequestQuit()
+        {
+            quit_requested = true;
         }
 
         /// <summary>
@@ -143,6 +149,11 @@ namespace Latrunculi.Impl
             {
                 control_loop_reset_requested = false;
                 throw new ControlLoopResetRequestedException();
+            }
+            if (possible_moves_hint_requested)
+            {
+                possible_moves_hint_requested = false;
+                throw new PossibleMovesHintRequestedException();
             }
             if (quit_requested)
             {
@@ -202,6 +213,10 @@ namespace Latrunculi.Impl
                                 move = ActivePlayer.GetMove();
                                 AssertControlLoopCommands();
                                 break;
+                            }
+                            catch (PossibleMovesHintRequestedException)
+                            {
+                                throw new NotImplementedException();
                             }
                             catch (ControlLoopResetRequestedException)
                             {

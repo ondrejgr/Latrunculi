@@ -57,6 +57,19 @@ namespace Latrunculi
         {
         }
     }
+    [Serializable()]
+    public class PossibleMovesHintRequestedException : ControlLoopException
+    {
+        public PossibleMovesHintRequestedException()
+            : base("Operaci nelze provést - byla vyžádána data.")
+        {
+        }
+
+        protected PossibleMovesHintRequestedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
 
     [Serializable()]
     public class ControlLoopQuitException : ControlLoopException

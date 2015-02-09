@@ -53,26 +53,58 @@ namespace Latrunculi.Impl
         protected override void OnSetPiecesToBeRemoved(Move move)
         {
             // zajeti v rozich
-            GameColorsEnum ownColor;
-            GameColorsEnum enemyColor;
+            Pieces ownPiece;
             Pieces enemyPiece;
             if (move.TargetPiece == Pieces.pcBlack)
             {
-                ownColor = GameColorsEnum.plrBlack;
                 enemyPiece = Pieces.pcWhite;
+                ownPiece = Pieces.pcBlack;
             }
             else if (move.TargetPiece == Pieces.pcWhite)
             {
-                ownColor = GameColorsEnum.plrWhite;
                 enemyPiece = Pieces.pcBlack;
+                ownPiece = Pieces.pcWhite;
             }
             else 
                 return;
 
-            enemyColor = (ownColor == GameColorsEnum.plrWhite) ? GameColorsEnum.plrBlack : GameColorsEnum.plrWhite;
+            Coord c1 = move.Target;
+            Coord? c2;
+            Coord? c3;
 
-            // TODO: impl determine pieces to be removed
-            throw new NotImplementedException();
+            // sebrani obkliceneho soupere
+            Action<CoordDirectionEnum> check = new Action<CoordDirectionEnum>((dir) =>
+                {
+                    c2 = Board.GetRelativeCoord(c1, dir);
+                    if (c2.HasValue)
+                    {
+                        c3 = Board.GetRelativeCoord(c2.Value, dir);
+                        if (c3.HasValue && Board[c2.Value] == enemyPiece && Board[c3.Value] == ownPiece)
+                            move.RemovedPiecesCoords.Add(c2.Value);
+                    }
+                });
+
+            check(CoordDirectionEnum.deForward);
+            check(CoordDirectionEnum.deAft);
+            check(CoordDirectionEnum.deLeft);
+            check(CoordDirectionEnum.deRight);
+
+            // sebrani soupere obliceneho v rohu
+            Action<Coord,Coord,Coord> checkCorner = new Action<Coord,Coord,Coord>((corner, cc1, cc2) =>
+                {
+                    if (Board[corner] == enemyPiece)
+                    {
+                        if (move.Target.Equals(cc1) && (Board[cc2] == ownPiece))
+                            move.RemovedPiecesCoords.Add(corner);
+                        else if (move.Target.Equals(cc2) && (Board[cc1] == ownPiece))
+                            move.RemovedPiecesCoords.Add(corner);
+                    }
+                });
+
+            checkCorner(Coord.Parse("a1"), Coord.Parse("a2"), Coord.Parse("b1"));
+            checkCorner(Coord.Parse("h1"), Coord.Parse("h2"), Coord.Parse("g1"));
+            checkCorner(Coord.Parse("a7"), Coord.Parse("g7"), Coord.Parse("h8"));
+            checkCorner(Coord.Parse("h7"), Coord.Parse("b7"), Coord.Parse("a6"));
         }
 
         /// <summary>
