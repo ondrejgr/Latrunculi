@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Latrunculi.Impl;
+using Latrunculi.Common;
 
 namespace Latrunculi.UnitTests
 {
@@ -12,7 +13,7 @@ namespace Latrunculi.UnitTests
         {
             Board b = new LatrunculiBoard();
             Rules rul = new LatrunculiRules(b);
-            Players p = new Players(b, rul);
+            Players p = new Players(b, rul, typeof(LatrunculiBrain));
             Assert.IsFalse(p.ArePlayersAssigned);
         }
 
@@ -21,7 +22,7 @@ namespace Latrunculi.UnitTests
         {
             Board b = new LatrunculiBoard();
             Rules rul = new LatrunculiRules(b);
-            Players p = new Players(b, rul);
+            Players p = new Players(b, rul, typeof(LatrunculiBrain));
             p.SetFromString("H1C2");
 
             Assert.IsTrue(p.ArePlayersAssigned);
@@ -36,7 +37,7 @@ namespace Latrunculi.UnitTests
         {
             Board b = new LatrunculiBoard();
             Rules rul = new LatrunculiRules(b);
-            Players p = new Players(b, rul);
+            Players p = new Players(b, rul, typeof(LatrunculiBrain));
             p.SetFromString("C1C2");
 
             Assert.IsTrue(p.ArePlayersAssigned);
@@ -52,7 +53,7 @@ namespace Latrunculi.UnitTests
         {
             Board b = new LatrunculiBoard();
             Rules rul = new LatrunculiRules(b);
-            Players p = new Players(b, rul);
+            Players p = new Players(b, rul, typeof(LatrunculiBrain));
             p.SetFromString("H1H2");
 
             Assert.IsTrue(p.ArePlayersAssigned);
@@ -66,7 +67,7 @@ namespace Latrunculi.UnitTests
         {
             Board b = new LatrunculiBoard();
             Rules rul = new LatrunculiRules(b);
-            Players p = new Players(b, rul);
+            Players p = new Players(b, rul, typeof(LatrunculiBrain));
             p.SetFromString("xxxxx");
         }
 
@@ -76,7 +77,7 @@ namespace Latrunculi.UnitTests
         {
             Board b = new LatrunculiBoard();
             Rules rul = new LatrunculiRules(b);
-            Players p = new Players(b, rul);
+            Players p = new Players(b, rul, typeof(LatrunculiBrain));
             p.SetFromString("h0n2");
         }
     }

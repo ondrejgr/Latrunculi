@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Latrunculi
+namespace Latrunculi.Common
 {
     public class Players
     {
@@ -18,6 +18,7 @@ namespace Latrunculi
 
         private Board _board;
         private Rules _rules;
+        private Type _brainType;
 
         private Player _player1;
         public Player Player1
@@ -57,61 +58,44 @@ namespace Latrunculi
             if (newSettings.Length != 4)
                 throw new ArgumentException("Neplatné nastavení hráčů.");
 
-            Player NewPlayer1 = null;
-            Player NewPlayer2 = null;
+            Player[] NewPlayers = new Player[2];
 
             int level;
             char type;
 
-            type = Char.ToUpper(newSettings[0]);
-            switch (type)
-            {
-                case 'H':
-                    NewPlayer1 = new HumanPlayer(GameColorsEnum.plrWhite);
-                    break;
-                case 'C':
+            Action<int, int> ParseString = new Action<int, int>((offset, player_index) =>
+                {
+                    type = Char.ToUpper(newSettings[0 + offset]);
                     try
                     {
-                        level = newSettings[1] - '0';
+                        level = newSettings[1 + offset] - '0';
                         if (level < 0 || level > 2)
                             throw new ArgumentException();
                     }
                     catch
                     {
-                        throw new ArgumentException("Neplatné nastavení obtížnosti bílého hráče: očekávám 0 - 2.");
+                        throw new ArgumentException(string.Format("Neplatné nastavení obtížnosti {0}. hráče: očekávám 0 - 2.", player_index + 1));
                     }
-                    NewPlayer1 = new ComputerPlayer(GameColorsEnum.plrWhite, _board, _rules, level);
-                    break;
-                default:
-                    throw new ArgumentException("Neplatný znak v nastavení bílého hráče: očekávám H nebo C.");
-            }
 
-            type = Char.ToUpper(newSettings[2]);
-            switch (type)
-            {
-                case 'H':
-                    NewPlayer2 = new HumanPlayer(GameColorsEnum.plrBlack);
-                    break;
-                case 'C':
-                    try
+                    switch (type)
                     {
-                        level = newSettings[3] - '0';
-                        if (level < 0 || level > 2)
-                            throw new ArgumentException();
+                        case 'H':
+                            NewPlayers[player_index] = new HumanPlayer((GameColorsEnum)player_index, level);
+                            break;
+                        case 'C':
+                            NewPlayers[player_index] = new ComputerPlayer((GameColorsEnum)player_index, Activator.CreateInstance(_brainType, _board, _rules) as Brain, level);
+                            break;
+                        default:
+                            throw new ArgumentException(string.Format("Neplatný znak v nastavení {0}. hráče: očekávám H nebo C.", player_index + 1));
                     }
-                    catch
-                    {
-                        throw new ArgumentException("Neplatné nastavení obtížnosti bílého hráče: očekávám 0 - 2.");
-                    }
-                    NewPlayer2 = new ComputerPlayer(GameColorsEnum.plrBlack, _board, _rules, level);
-                    break;
-                default:
-                    throw new ArgumentException("Neplatný znak v nastavení černého hráče: očekávám H nebo C.", "newSettings");
-            }
+                });
+
+            ParseString(0, 0);
+            ParseString(2, 1); 
 
             // nedošlo k výjimce, můžeme změnit
-            Player1 = NewPlayer1;
-            Player2 = NewPlayer2;
+            Player1 = NewPlayers[0];
+            Player2 = NewPlayers[1];
         }
 
         public Player GetPlayerByColor(GameColorsEnum color)
@@ -128,15 +112,20 @@ namespace Latrunculi
         /// Vytvarit instanci nastaveni hracu.
         /// </summary>
         /// <param name="board">Kvuli PC hraci a jeho mozku.</param>
-        public Players(Board board, Rules rules)
+        public Players(Board board, Rules rules, Type brainType)
         {
             if (board == null)
                 throw new ArgumentNullException("board");
             if (rules == null)
                 throw new ArgumentNullException("rules");
-
+            if (brainType == null)
+                throw new ArgumentNullException("brainType");
+            if (!brainType.IsSubclassOf(typeof(Brain)))
+                throw new ArgumentException("Byl předán nesprávný typ.", "brainType");
+            
             _board = board;
             _rules = rules;
+            _brainType = brainType;
         }
 
         public override string ToString()

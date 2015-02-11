@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Latrunculi.Common;
 
 namespace Latrunculi.UnitTests
 {
@@ -71,10 +72,10 @@ namespace Latrunculi.UnitTests
             Assert.AreEqual(m1, m2);
 
             // zamerne - RemovedPiecesCoords se nepouziva pro porovnani tahu
-            m1.RemovedPiecesCoords.Add(Coord.Parse("c1"));
+            m1.RemovedPieces.Add(RemovedPiece.Create(Coord.Parse("c1"), Pieces.pcBlack));
             Assert.AreEqual(m1, m2);
 
-            m2.RemovedPiecesCoords.Add(Coord.Parse("c1"));
+            m2.RemovedPieces.Add(RemovedPiece.Create(Coord.Parse("c1"), Pieces.pcBlack));
             Assert.AreEqual(m1, m2);
         }
     }

@@ -30,62 +30,7 @@ namespace Latrunculi
         {
         }
     }
-    /********************/
-    [Serializable()]
-    public abstract class ControlLoopException : LatrunculiException
-    {
-        public ControlLoopException(string message)
-            : base(message)
-        {
-        }
 
-        protected ControlLoopException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-    }
-    [Serializable()]
-    public class ControlLoopResetRequestedException : ControlLoopException
-    {
-        public ControlLoopResetRequestedException()
-            : base("Operaci nelze provést - byl vyžádán reset řídicí smyčky.")
-        {
-        }
-
-        protected ControlLoopResetRequestedException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-    }
-    [Serializable()]
-    public class PossibleMovesHintRequestedException : ControlLoopException
-    {
-        public PossibleMovesHintRequestedException()
-            : base("Operaci nelze provést - byla vyžádána data.")
-        {
-        }
-
-        protected PossibleMovesHintRequestedException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-    }
-
-    [Serializable()]
-    public class ControlLoopQuitException : ControlLoopException
-    {
-        public ControlLoopQuitException()
-            : base("Operaci nelze provést - bylo vyžádáno ukončení aplikace.")
-        {
-        }
-
-        protected ControlLoopQuitException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-    }
-
-/********************/
     [Serializable()]
     public class MoveInvalidException : LatrunculiException
     {

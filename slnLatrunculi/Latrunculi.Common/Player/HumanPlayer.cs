@@ -8,25 +8,19 @@ namespace Latrunculi
 {
     public class HumanPlayer: Player
     {
-        public Move HumanMove
-        {
-            get;
-            set;
-        }
-
-        public HumanPlayer(GameColorsEnum color)
-            : base(color)
+        public HumanPlayer(GameColorsEnum color, int level = 1)
+            : base(color, level)
         {
         }
 
-        public override Move GetMove()
+        public override Move GetMove(System.Threading.CancellationToken ct)
         {
-            return HumanMove;
+            return HumanMove.Move;
         }
 
         public override string ToString()
         {
-            return string.Format("H{0}", 0);
+            return string.Format("H{0}", Level);
         }
     }
 }

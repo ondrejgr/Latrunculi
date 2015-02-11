@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Latrunculi
+namespace Latrunculi.Common
 {
     public abstract class Rules
     {
@@ -90,7 +90,7 @@ namespace Latrunculi
             if (move == null)
                 throw new ArgumentNullException("move");
 
-            move.RemovedPiecesCoords.Clear();
+            move.RemovedPieces.Clear();
 
             OnSetPiecesToBeRemoved(move);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Latrunculi.Common;
 
 namespace Latrunculi.UnitTests
 {
@@ -77,11 +78,43 @@ namespace Latrunculi.UnitTests
             Assert.AreEqual(Pieces.pcBlack, b[c2]);
             Assert.AreEqual(Pieces.pcBlack, b[c3]);
 
-            m.RemovedPiecesCoords.Add(c3);
+            m.RemovedPieces.Add(RemovedPiece.Create(c3, Pieces.pcBlack));
             b.ApplyMove(m);
             Assert.AreEqual(Pieces.pcNone, b[c1]);
             Assert.AreEqual(Pieces.pcBlack, b[c2]);
             Assert.AreEqual(Pieces.pcNone, b[c3]);
+        }
+
+        [TestMethod]
+        public void ApplyInvMove1()
+        {
+            Board b = new Latrunculi.Impl.LatrunculiBoard();
+            b.Init();
+
+            Move m;
+
+            m = new Move(Coord.Parse("a2"), Coord.Parse("a3"), Pieces.pcNone, Pieces.pcWhite);
+            b.ApplyMove(m);
+            Assert.AreEqual(Pieces.pcNone, b[Coord.Parse("a2")]);
+            Assert.AreEqual(Pieces.pcWhite, b[Coord.Parse("a3")]);
+
+            m = new Move(Coord.Parse("b6"), Coord.Parse("b3"), Pieces.pcNone, Pieces.pcBlack);
+            b.ApplyMove(m);
+            Assert.AreEqual(Pieces.pcNone, b[Coord.Parse("b6")]);
+            Assert.AreEqual(Pieces.pcBlack, b[Coord.Parse("b3")]);
+
+            Coord b3 = Coord.Parse("b3");
+            m = new Move(Coord.Parse("c2"), Coord.Parse("c3"), Pieces.pcNone, Pieces.pcWhite);
+            m.RemovedPieces.Add(RemovedPiece.Create(b3, b[b3]));
+            b.ApplyMove(m);
+            Assert.AreEqual(Pieces.pcNone, b[Coord.Parse("c2")]);
+            Assert.AreEqual(Pieces.pcWhite, b[Coord.Parse("c3")]);
+            Assert.AreEqual(Pieces.pcNone, b[Coord.Parse("b3")]);
+
+            b.ApplyInvMove(m);
+            Assert.AreEqual(Pieces.pcWhite, b[Coord.Parse("c2")]);
+            Assert.AreEqual(Pieces.pcNone, b[Coord.Parse("c3")]);
+            Assert.AreEqual(Pieces.pcBlack, b[Coord.Parse("b3")]);
         }
 
         [TestMethod]

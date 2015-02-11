@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Latrunculi.Impl;
+using Latrunculi.Common;
 
 namespace Latrunculi.UnitTests
 {

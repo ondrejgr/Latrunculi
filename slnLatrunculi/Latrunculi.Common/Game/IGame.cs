@@ -36,12 +36,6 @@ namespace Latrunculi
             get;
         }
 
-        void Run(string playersSetting);
-        
-        void RequestQuit();
-        void RequestControlLoopReset();
-        void RequestPossibleMovesHint(Coord src, GameColorsEnum color);
-
-        void SetPlayersFromString(string newSettings);
+        void Run(string playersSetting, GameColorsEnum? activePlayerColor = null);
     }
 }

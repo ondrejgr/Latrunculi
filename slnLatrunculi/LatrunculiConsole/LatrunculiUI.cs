@@ -33,49 +33,45 @@ namespace LatrunculiConsole
         private bool GameLoaded = false;
         
         /// <summary>
-        /// Handle na knihovnu
-        /// </summary>
-        private ObjectHandle hlib;
-        private IGame Game;
-        
-        /// <summary>
         /// Nacteni herni logiky
         /// </summary>
-        private void LoadGameLibrary()
+        private IGame GetNewGameInstance()
         {
             if (GameLoaded)
                 throw new InvalidOperationException("Neplatná operace, knihovna hry byla již nahrána.");
 
+            ObjectHandle hlib;
             hlib = Activator.CreateInstance(FileName, "Latrunculi.Impl.Game");
             if (hlib == null)
                 throw new Exception(string.Format("Nepodařilo se vytvořit instanci logiky hry ze souboru {0}.", FileName));
 
-            Game = hlib.Unwrap() as IGame;
-            if (Game == null)
+            IGame game = hlib.Unwrap() as IGame;
+            if (game == null)
                 throw new Exception(string.Format("Nepodařilo se získat instanci logiky hry ze souboru {0}.", FileName));
 
-            Console.WriteLine("Rozhraní hry {0} {1} bylo načteno.", Game.Title, Game.Version);
-
-            Game.RenderBoard += Game_RenderBoard;
-            Game.RenderActivePlayer += Game_RenderActivePlayer;
-            Game.MoveInvalid += Game_MoveInvalid;
-            Game.GameOver += Game_GameOver;
+            return game;
         }
 
-        private string GetPlayersSetting(string current)
+        private void HookGameEvents(IGame game)
         {
-            Console.WriteLine("Aktuální nastavení hráčů: {0}.", current);
-            Console.WriteLine("Zadejte nové nastavení hráčů v pořadí bílý, černý");
-            Console.WriteLine("  C0 - C2 = počítač (0-lehký), H0 = lidský hráč, Enter = žádná změna...");
+            if (game == null)
+                throw new ArgumentNullException("game");
 
-            string newSettings = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(newSettings))
+            game.RenderBoard += Game_RenderBoard;
+            game.RenderActivePlayer += Game_RenderActivePlayer;
+            game.MoveInvalid += Game_MoveInvalid;
+            game.GameOver += Game_GameOver;
+        }
+
+        private void UnhookGameEvents(IGame game)
+        {
+            if (game != null)
             {
-                Console.WriteLine("Nastavení hráčů nebylo změněno.");
-                return current;
+                game.RenderBoard -= Game_RenderBoard;
+                game.RenderActivePlayer -= Game_RenderActivePlayer;
+                game.MoveInvalid -= Game_MoveInvalid;
+                game.GameOver -= Game_GameOver;
             }
-            else
-                return newSettings;
         }
 
         /// <summary>
@@ -140,114 +136,6 @@ namespace LatrunculiConsole
             string typ = isHuman ? "lidský hráč" : "počítač";
             Console.WriteLine();
             Console.WriteLine("Aktuální hráč na tahu: {0} ({1}).", Player.Name, typ);
-
-            // zjistit tah hrace nebo umoznit ovladani programu pri tahu PC
-            string prompt;
-            if (isHuman)
-            {
-                ((HumanPlayer)Player).HumanMove = null;
-                prompt = "Zadejte svůj tah (př. A2A3) nebo řídicí příkaz (? pro nápovědu)...";
-            }
-            else
-                prompt = "Zadejte řídicí příkaz (? pro nápovědu) nebo Enter pro provedení tahu počítačem...";
-
-            string str;
-            Console.Write(prompt);
-            str = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(str))
-            {
-                if (isHuman)
-                {
-                    Console.WriteLine("CHYBA: Byl zadán prázdný řetězec.");
-                    Game.RequestControlLoopReset();
-                }
-            }
-            else
-            {
-                char command = Char.ToUpper(str[0]);
-                switch (command)
-                {
-                    case '?':
-                        Console.WriteLine("Příkazy, které je možné zadat:");
-                        Console.WriteLine("    Y = napoveda nejlepsiho tahu");
-                        Console.WriteLine("    TA1 = zobrazit mozne tahy z policka A1");
-                        Console.WriteLine("    R = znovu vykreslit hraci desku");
-                        Console.WriteLine("    S = změnit nastavení hráčů");
-                        Console.WriteLine("    X = ukoncit hru");
-                        Game.RequestControlLoopReset();
-                        break;
-                    case 'Y':
-                        try
-                        {
-                            throw new NotImplementedException();
-                        }
-                        catch (Exception exc)
-                        {
-                            Console.WriteLine("CHYBA: Nejlepší tah nelze napovědět ! {0}", exc.Message);
-                        }
-                        Game.RequestControlLoopReset();
-                        break;
-                    case 'T':
-                        Coord c;
-                        try
-                        {
-                            string strcoord = str.Substring(1, 2);
-                            c = Coord.Parse(strcoord);
-                        }
-                        catch (Exception exc)
-                        {
-                            Console.WriteLine("CHYBA: Nelze zobrazit možné tahy ! {0}", exc.Message);
-                            Game.RequestControlLoopReset();
-                            return;
-                        }
-                        Game.RequestPossibleMovesHint(c, Player.Color);
-                        break;
-                    case 'S':
-                        string oldSettings = Game.CurrentPlayersSetting;
-                        try
-                        {
-                            string newSettings = GetPlayersSetting(oldSettings);
-                            if (oldSettings != newSettings)
-                                Game.SetPlayersFromString(newSettings);
-                        }
-                        catch (Exception exc)
-                        {
-                            Console.WriteLine("CHYBA: Nastavení hráčů nebylo změněno: {0}", exc.Message);
-                            Game.SetPlayersFromString(oldSettings);
-                        }
-                        Game.RequestControlLoopReset();
-                        break;
-                    case 'R':
-                        try
-                        {
-                            Game_RenderBoard(Sender);
-                        }
-                        catch (Exception exc)
-                        {
-                            Console.WriteLine("CHYBA: Desku se nepodařilo překreslit ! {0}", exc.Message);
-                        }
-                        Game.RequestControlLoopReset();
-                        break;
-                    case 'X':
-                        Game.RequestQuit();
-                        break;
-                    default:
-                        // jinak předpokládáme, že nejde o příkaz, ale byl zadán tah
-                        if (isHuman)
-                        {
-                            try
-                            {
-                                ((HumanPlayer)Player).HumanMove = Move.Parse(str, (Player.Color == GameColorsEnum.plrBlack) ? Pieces.pcBlack : Pieces.pcWhite);
-                            }
-                            catch (Exception exc)
-                            {
-                                Console.WriteLine("Chyba zadání: {0}", exc.Message);
-                            }
-                        }
-                        break;
-                }
-            }
         }
 
         void Game_MoveInvalid(IGame Sender, Player Player, Move Move)
@@ -266,30 +154,60 @@ namespace LatrunculiConsole
             }
         }
 
+        private string GetPlayersSetting(string current)
+        {
+            Console.WriteLine("Aktuální nastavení hráčů: {0}.", current);
+            Console.WriteLine("Zadejte nové nastavení hráčů v pořadí bílý, černý");
+            Console.WriteLine("  C0 - C2 = počítač (0-lehký), H0 = lidský hráč, Enter = žádná změna...");
+
+            string newSettings = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(newSettings))
+            {
+                Console.WriteLine("Nastavení hráčů nebylo změněno.");
+                return current;
+            }
+            else
+                return newSettings;
+        }
+
         /// <summary>
         /// Spustit (UI loop)
         /// </summary>
         public void RunUI()
         {
-            LoadGameLibrary();
+            IGame game = GetNewGameInstance();
+            Console.WriteLine("Instance hry {0} {1} byla vytvořena.", game.Title, game.Version);
+            try
+            {
+                HookGameEvents(game);
 
-            string playerSettings = GetPlayersSetting("H0C1");
-            Console.WriteLine("Spouštím hru.");
-            Game.Run(playerSettings);
+                string playersSetting = GetPlayersSetting("H1C1");
+                Console.WriteLine("Spouštím hru.");
+
+                Task gameTask = Task.Run(new Action(() => game.Run(playersSetting)));
+                gameTask.Wait();
+            }
+            catch (AggregateException exc)
+            {
+                Console.WriteLine("CHYBA ! Při běhu hry došlo k chybám !");
+                foreach (Exception ex in exc.InnerExceptions)
+                {
+                    Console.WriteLine("  {0}", ex.Message);
+                }
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine("CHYBA ! Při běhu hry došlo k výjimce: {0}", exc.Message);
+            }
+            finally
+            {
+                UnhookGameEvents(game);
+            }
         }
 
         public void Dispose()
         {
-            if (Game != null)
-            {
-                Game.RenderBoard -= Game_RenderBoard;
-                Game.RenderActivePlayer -= Game_RenderActivePlayer;
-                Game.MoveInvalid -= Game_MoveInvalid;
-                Game.GameOver -= Game_GameOver;
-            }
 
-            Game = null;
-            hlib = null;
         }
     }
 }

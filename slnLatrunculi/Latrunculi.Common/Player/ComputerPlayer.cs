@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Latrunculi.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,46 +9,28 @@ namespace Latrunculi
 {
     public class ComputerPlayer : Player
     {
-        public ComputerPlayer(GameColorsEnum color, Board board, Rules rules, int level = 1)
-            : base(color)
+        public ComputerPlayer(GameColorsEnum color, Brain brain, int level = 1):base(color, level)
         {
-            if (board == null)
-                throw new ArgumentNullException("board");
-            if (rules == null)
-                throw new ArgumentNullException("rules");
-            Board = board;
-            Rules = rules;
-            Level = level;
+            if (brain == null)
+                throw new ArgumentNullException("brain");
+            _brain = brain;
         }
 
-        private Board Board;
-        private Rules Rules;
-
-        private int _level;
-        /// <summary>
-        /// Obtiznost PC hrace (0 = lehka,1,2 = tezka);
-        /// </summary>
-        public virtual int Level
+        private Brain _brain;
+        private Brain Brain
         {
             get
             {
-                return _level;
-            }
-            set
-            {
-                _level = value;
+                return _brain;
             }
         }
 
-        Random r = new Random();
-        public override Move GetMove()
+        public override Move GetMove(System.Threading.CancellationToken ct)
         {
-            Moves moves = Rules.GetValidMoves(Color);
-            
-            if (moves.Count == 0)
-                throw new InvalidOperationException("Žádné volné tahy !");
+            Move result = null;
 
-            return moves[r.Next(0, moves.Count)];
+            
+            return base.GetMove(ct);
         }
 
         public override string ToString()

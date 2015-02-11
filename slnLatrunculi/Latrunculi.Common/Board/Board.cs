@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Latrunculi.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -158,11 +159,12 @@ namespace Latrunculi
         {
             throw new NotImplementedException();
         }
-
+        
         /// <summary>
-        /// Proved tah
+        /// Provedeni tahu bez odebrani kamenu.
         /// </summary>
-        public void ApplyMove(Move move)
+        /// <param name="move"></param>
+        private void ApplyMoveNoRemove(Move move)
         {
             if (move == null)
                 throw new ArgumentNullException("move");
@@ -172,10 +174,33 @@ namespace Latrunculi
 
             this[src] = move.SourcePiece;
             this[tar] = move.TargetPiece;
+        }
 
-            foreach(Coord c in move.RemovedPiecesCoords)
+        /// <summary>
+        /// Proved tah
+        /// </summary>
+        public void ApplyMove(Move move)
+        {
+            ApplyMoveNoRemove(move);
+
+            foreach(RemovedPiece c in move.RemovedPieces)
             {
-                this[c] = Pieces.pcNone;
+                this[c.Coord] = Pieces.pcNone;
+            }
+        }
+
+        /// <summary>
+        /// Proved inverzni tah
+        /// </summary>
+        /// <param name="move"></param>
+        public void ApplyInvMove(Move move)
+        {
+            Move inv = new Move(move.Target, move.Source, move.SourcePiece, move.TargetPiece);
+            ApplyMoveNoRemove(inv);
+            
+            foreach(RemovedPiece c in move.RemovedPieces)
+            {
+                this[c.Coord] = c.Piece;
             }
         }
 
@@ -223,6 +248,17 @@ namespace Latrunculi
                 return null;
             else
                 return Coord.Create((char)(current.x + deltaX), (byte)(current.y + deltaY));
+        }
+
+        /// <summary>
+        /// Vytvorit kopii desky (napr. pro ucely Mozku)
+        /// </summary>
+        public Board GetBoardCopy()
+        {
+            if (!(this is ICloneable))
+                throw new NotSupportedException();
+            else
+                return ((ICloneable)this).Clone() as Board;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Latrunculi.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -80,7 +81,7 @@ namespace Latrunculi.Impl
                     {
                         c3 = Board.GetRelativeCoord(c2.Value, dir);
                         if (c3.HasValue && Board[c2.Value] == enemyPiece && Board[c3.Value] == ownPiece)
-                            move.RemovedPiecesCoords.Add(c2.Value);
+                            move.RemovedPieces.Add(RemovedPiece.Create(c2.Value, Board[c2.Value]));
                     }
                 });
 
@@ -95,9 +96,9 @@ namespace Latrunculi.Impl
                     if (Board[corner] == enemyPiece)
                     {
                         if (move.Target.Equals(cc1) && (Board[cc2] == ownPiece))
-                            move.RemovedPiecesCoords.Add(corner);
+                            move.RemovedPieces.Add(RemovedPiece.Create(corner, Board[corner]));
                         else if (move.Target.Equals(cc2) && (Board[cc1] == ownPiece))
-                            move.RemovedPiecesCoords.Add(corner);
+                            move.RemovedPieces.Add(RemovedPiece.Create(corner, Board[corner]));
                     }
                 });
 

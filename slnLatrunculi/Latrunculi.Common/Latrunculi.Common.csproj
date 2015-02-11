@@ -52,11 +52,15 @@
     <Compile Include="Board\Move.cs" />
     <Compile Include="Board\Moves.cs" />
     <Compile Include="Board\PiecesEnum.cs" />
+    <Compile Include="Board\RemovedPiece.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Game\GameColorsEnum.cs" />
-    <Compile Include="Game\GameEvents.cs" />
+    <Compile Include="Game\GameEventDelegates.cs" />
     <Compile Include="Game\IGame.cs" />
+    <Compile Include="Player\Brain.cs" />
+    <Compile Include="Player\BrainEventDelegates.cs" />
     <Compile Include="Player\ComputerPlayer.cs" />
+    <Compile Include="Player\HumanMove.cs" />
     <Compile Include="Player\HumanPlayer.cs" />
     <Compile Include="Player\Player.cs" />
     <Compile Include="Player\Players.cs" />

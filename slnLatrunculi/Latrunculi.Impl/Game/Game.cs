@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Latrunculi.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Latrunculi.Impl
@@ -15,12 +17,13 @@ namespace Latrunculi.Impl
         public event RenderActivePlayerEvent RenderActivePlayer;
         public event MoveInvalidEvent MoveInvalid;
         public event GameOverEvent GameOver;
+        public event HumanMoveRequestedEvent HumanMoveRequested;
 
         public Game()
         {
             _board = new LatrunculiBoard();
             _rules = new LatrunculiRules(_board);
-            _players = new Players(_board, _rules);
+            _players = new Players(_board, _rules, typeof(LatrunculiBrain));
         }
 
         private readonly Board _board;
@@ -122,46 +125,6 @@ namespace Latrunculi.Impl
                 GameOver(this, Winner);
         }
 
-        private bool control_loop_reset_requested = false;
-        public void RequestControlLoopReset()
-        {
-            control_loop_reset_requested = true;
-        }
-
-        private bool possible_moves_hint_requested = false;
-        public void RequestPossibleMovesHint(Coord src, GameColorsEnum color)
-        {
-            possible_moves_hint_requested = true;
-        }
-
-        private bool quit_requested = false;
-        public void RequestQuit()
-        {
-            quit_requested = true;
-        }
-
-        /// <summary>
-        /// Vyvolat vyjimku pokud je pozadovano
-        /// </summary>
-        private void AssertControlLoopCommands()
-        {
-            if (control_loop_reset_requested)
-            {
-                control_loop_reset_requested = false;
-                throw new ControlLoopResetRequestedException();
-            }
-            if (possible_moves_hint_requested)
-            {
-                possible_moves_hint_requested = false;
-                throw new PossibleMovesHintRequestedException();
-            }
-            if (quit_requested)
-            {
-                quit_requested = false;
-                throw new ControlLoopQuitException();
-            }
-        }
-
         /// <summary>
         /// Ukoncit hry a zobrazit viteze.
         /// </summary>
@@ -175,85 +138,38 @@ namespace Latrunculi.Impl
 
             OnGameOver(this, winner);
         }
-
+        
         /// <summary>
         /// Spustit hru
         /// </summary>
-        public void Run(string playersSetting)
+        public void Run(string playersSetting, GameColorsEnum? activePlayerColor = null)
         {
             // nastavit hrace
             Players.SetFromString(playersSetting);
             Rules.CheckPlayers(Players);
 
-            // hrač na tahu - určí jej pravidla (začátek hry)
-            ActivePlayerColor = Rules.GetFirstActivePlayerColor(); 
+            // hrač na tahu - pokud není zadán, určí jej pravidla (začátek hry)
+            if (activePlayerColor.HasValue)
+                ActivePlayerColor = activePlayerColor.Value;
+            else
+                ActivePlayerColor = Rules.GetFirstActivePlayerColor(); 
 
+            // pripravit novou hraci desku, postavit figurky
             Board.Init();
-
-            // smycka Manazera
-            try
-            {
-                while (true)
-                {
-                    // vykresleni
-                    OnRenderBoard();
-
-                    // zjisti tah
-                    Move move = null;
-                    bool isMoveValid;
-                    do
-                    {
-                        do
-                        {
-                            try
-                            {
-                                OnRenderActivePlayer();
-                                AssertControlLoopCommands();
-
-                                move = ActivePlayer.GetMove();
-                                AssertControlLoopCommands();
-                                break;
-                            }
-                            catch (PossibleMovesHintRequestedException)
-                            {
-                                throw new NotImplementedException();
-                            }
-                            catch (ControlLoopResetRequestedException)
-                            {
-                            }
-                        } while (true);
-
-                        // kontrola tahu rozhodcim
-                        isMoveValid = (ActivePlayer is ComputerPlayer) || Rules.IsMoveValid(move, ActivePlayer.Color);
-                        if (!isMoveValid)
-                            OnMoveInvalid(move);
-                    } while (!isMoveValid);
-
-                    // provedeni tahu deskou
-                    Rules.SetPiecesToBeRemoved(move);
-                    Board.ApplyMove(move);
-
-                    // zmenit hrace na tahu
-                    if (ActivePlayerColor == GameColorsEnum.plrBlack)
-                        ActivePlayerColor = GameColorsEnum.plrWhite;
-                    else
-                        ActivePlayerColor = GameColorsEnum.plrBlack;
-                }
-            }
-            catch (ControlLoopQuitException)
-            {
-                // ukoncit hru
-                EndGame();
-            }
         }
 
         /// <summary>
-        /// Zmenit nastaveni hracu podle retezce (pr. H0C1)
-        /// <param name="newSettings"></param>
-        public void SetPlayersFromString(string newSettings)
+        /// Smycka manazera hry
+        /// </summary>
+        private void GameLoop()
         {
-            Players.SetFromString(newSettings);
-            Rules.CheckPlayers(Players);
+            OnRenderBoard();
+            OnRenderActivePlayer();
+
+            using (CancellationTokenSource cts = new CancellationTokenSource())
+            {
+                Task<Move> getMoveTask = Task.Run<Move>(new Func<Move>(() => { return ActivePlayer.GetMove(cts.Token); }), cts.Token);
+            }
         }
     }
 }

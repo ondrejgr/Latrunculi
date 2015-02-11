@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Latrunculi.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,12 +24,12 @@ namespace Latrunculi
             private set;
         }
 
-        private readonly List<Coord> _removedPiecesCoords = new List<Coord>();
-        public List<Coord> RemovedPiecesCoords
+        private readonly List<RemovedPiece> _removedPieces = new List<RemovedPiece>();
+        public List<RemovedPiece> RemovedPieces
         {
             get
             {
-                return _removedPiecesCoords;
+                return _removedPieces;
             }
         }
 
@@ -100,7 +101,7 @@ namespace Latrunculi
                        Target.Equals(m.Target) &&
                        (SourcePiece == m.SourcePiece) &&
                        (TargetPiece == m.TargetPiece);
-                       //RemovedPiecesCoords.SequenceEqual(m.RemovedPiecesCoords);
+                //RemovedPieces.SequenceEqual(m.RemovedPieces);
             }
         }
 
@@ -111,14 +112,14 @@ namespace Latrunculi
                        Target.Equals(other.Target) &&
                        (SourcePiece == other.SourcePiece) &&
                        (TargetPiece == other.TargetPiece);
-                       //RemovedPiecesCoords.SequenceEqual(other.RemovedPiecesCoords);
+                       //RemovedPieces.SequenceEqual(other.RemovedPieces);
         }
 
         public override int GetHashCode()
         {
             return Source.GetHashCode() + 1000 * Target.GetHashCode()
                     + 1000000 * SourcePiece.GetHashCode() + 10000000 * TargetPiece.GetHashCode();
-                    //+ 100000000 * RemovedPiecesCoords.GetHashCode(); // zamerne NE - RemovedPiecesCoords nema vliv na porovnani
+                    //+ 100000000 * RemovedPieces.GetHashCode(); // zamerne NE - RemovedPiecesCoords nema vliv na porovnani
         }
     }
 }
