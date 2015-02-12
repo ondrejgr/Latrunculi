@@ -14,6 +14,27 @@ namespace Latrunculi.Impl
             
         }
 
+        /// <summary>
+        /// Zjistit, kdo je první na tahu (při nové hře).
+        /// </summary>
+        /// <returns></returns>
+        public override GameColorsEnum GetFirstActivePlayerColor()
+        {
+            return GameColorsEnum.plrWhite;
+        }
+
+        /// <summary>
+        /// Zjistit, kdo je další na tahu
+        /// </summary>
+        /// <returns></returns>
+        public override GameColorsEnum GetNextPlayerColor(GameColorsEnum activePlayerColor)
+        {
+            if (activePlayerColor == GameColorsEnum.plrBlack)
+                return GameColorsEnum.plrWhite;
+            else
+                return GameColorsEnum.plrBlack;
+        }
+
         protected override void OnGetValidMoves(Moves moves, GameColorsEnum color)
         {
             Pieces tarPiece = (color == GameColorsEnum.plrBlack) ? Pieces.pcBlack : Pieces.pcWhite;
@@ -123,6 +144,18 @@ namespace Latrunculi.Impl
                 return GameColorsEnum.plrBlack;
             else
                 return null;
+        }
+
+        /// <summary>
+        /// Testovani podminky konce hry
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsGameOver()
+        {
+            int white = Board.GetNumberOfPieces(GameColorsEnum.plrWhite);
+            int black = Board.GetNumberOfPieces(GameColorsEnum.plrBlack);
+
+            return (white == 0) || (black == 0) || (numOfMovesWithoutRemoval >= 30);
         }
     }
 }

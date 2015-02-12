@@ -17,7 +17,10 @@ namespace Latrunculi.Impl
         public event RenderActivePlayerEvent RenderActivePlayer;
         public event MoveInvalidEvent MoveInvalid;
         public event GameOverEvent GameOver;
-        public event HumanMoveRequestedEvent HumanMoveRequested;
+        public event PiecesRemovedEvent PiecesRemoved;
+
+        public event BrainComputationStartedEvent BrainComputationStarted;
+        public event BrainComputationFinishedEvent BrainComputationFinished;
 
         public Game()
         {
@@ -85,6 +88,15 @@ namespace Latrunculi.Impl
             }
         }
 
+        private bool _isComputing = false;
+        public bool IsComputing
+        {
+            get
+            {
+                return _isComputing;
+            }
+        }
+
         public string Title
         {
             get
@@ -125,10 +137,44 @@ namespace Latrunculi.Impl
                 GameOver(this, Winner);
         }
 
+        protected virtual void OnPiecesRemoved(Move move)
+        {
+            if (PiecesRemoved != null)
+            {
+                Player piecesOwner;
+                if (ActivePlayer == Players.Player1)
+                    piecesOwner = Players.Player2;
+                else
+                    piecesOwner = Players.Player1;
+                PiecesRemoved(ActivePlayer, piecesOwner, move, Board.GetNumberOfPieces(GameColorsEnum.plrWhite), Board.GetNumberOfPieces(GameColorsEnum.plrBlack));
+            }
+        }
+
+        protected virtual void OnBrainComputationStarted()
+        {
+            if (BrainComputationStarted != null)
+                BrainComputationStarted();
+        }
+
+        protected virtual void OnBrainComputationFinished(Move bestMove, string errorMessage, bool isCancelled)
+        {
+            if (BrainComputationFinished != null)
+                BrainComputationFinished(bestMove, errorMessage, isCancelled);
+        }
+        
+        /// <summary>
+        /// Zmenit nastaveni hracu podle retezce (pr. H0C1)
+        /// <param name="newSettings"></param>
+        public void SetPlayersFromString(string newSettings)
+        {
+            Players.SetFromString(newSettings);
+            Rules.CheckPlayers(Players);
+        }
+
         /// <summary>
         /// Ukoncit hry a zobrazit viteze.
         /// </summary>
-        private void EndGame()
+        public void EndGame()
         {
             Player winner = null;
             GameColorsEnum? winnerColor = Rules.GetWinner();
@@ -147,6 +193,7 @@ namespace Latrunculi.Impl
             // nastavit hrace
             Players.SetFromString(playersSetting);
             Rules.CheckPlayers(Players);
+            Rules.ClearNumOfMovesWithoutRemoval();
 
             // hrač na tahu - pokud není zadán, určí jej pravidla (začátek hry)
             if (activePlayerColor.HasValue)
@@ -156,20 +203,110 @@ namespace Latrunculi.Impl
 
             // pripravit novou hraci desku, postavit figurky
             Board.Init();
+
+            OnRenderBoard();
+            OnRenderActivePlayer();
+        }
+
+        CancellationTokenSource cts = null;
+        public void CancelBrainComputation()
+        {
+            cts.Cancel();
         }
 
         /// <summary>
         /// Smycka manazera hry
         /// </summary>
-        private void GameLoop()
+        /// <returns>False = konec hry</returns>
+        public bool Proceed()
         {
-            OnRenderBoard();
-            OnRenderActivePlayer();
-
-            using (CancellationTokenSource cts = new CancellationTokenSource())
+            bool isMoveValid;
+            Move move;
+            cts = new CancellationTokenSource();
+            try
             {
-                Task<Move> getMoveTask = Task.Run<Move>(new Func<Move>(() => { return ActivePlayer.GetMove(cts.Token); }), cts.Token);
+                // zjistit tah hrace
+                Task<Move> getMoveTask = null;
+                getMoveTask = Task.Run<Move>(new Func<Move>(() => { return ActivePlayer.GetMove(cts.Token); }), cts.Token);
+                try
+                {
+                    _isComputing = true;
+                    if (ActivePlayer is ComputerPlayer)
+                        OnBrainComputationStarted();
+                                        
+                    getMoveTask.Wait();
+
+                    _isComputing = false;
+                    if (ActivePlayer is ComputerPlayer)
+                        OnBrainComputationFinished(getMoveTask.Result, string.Empty, false);
+                }
+                catch (AggregateException exc)
+                {
+                    _isComputing = false;
+                    if (ActivePlayer is ComputerPlayer)
+                    {
+                        if ((exc.InnerExceptions[0] is OperationCanceledException) || getMoveTask.IsCanceled)
+                            OnBrainComputationFinished(null, "Operace byla přerušena uživatelem.", true);
+                        else
+                            OnBrainComputationFinished(null, string.Join(Environment.NewLine, exc.InnerExceptions.Select(e => e.Message)), false);
+                        return true;
+                    }
+                    else
+                        throw exc;
+                }
+                catch (Exception exc)
+                {
+                    _isComputing = false;
+                    if (ActivePlayer is ComputerPlayer)
+                    {
+                        OnBrainComputationFinished(null, exc.Message, false);
+                        return true;
+                    }
+                    else
+                        throw exc;
+                }
+
+                move = getMoveTask.Result;
+
+                isMoveValid = (ActivePlayer is ComputerPlayer && (move != null)) || Rules.IsMoveValid(move, ActivePlayer.Color);
+                if (isMoveValid)
+                {
+                    // provedeni tahu deskou
+                    Rules.SetPiecesToBeRemoved(move);
+                    Board.ApplyMove(move);
+
+                    OnRenderBoard();
+
+                    if (move.RemovedPieces.Count > 0)
+                    {
+                        Rules.ClearNumOfMovesWithoutRemoval();
+                        OnPiecesRemoved(move);
+                    }
+                    else
+                        Rules.IncNumOfMovesWithoutRemoval();
+
+                    // zkontrolovat prohru/vitezstvi
+                    if (Rules.IsGameOver())
+                    {
+                        EndGame();
+                        return false;
+                    }
+
+                    // zmenit hrace na tahu
+                    ActivePlayerColor = Rules.GetNextPlayerColor(ActivePlayerColor);
+
+                    OnRenderActivePlayer();
+                }
+                else
+                    OnMoveInvalid(move);
             }
+            finally
+            {
+                cts.Dispose();
+                cts = null;
+            }
+
+            return true;
         }
     }
 }

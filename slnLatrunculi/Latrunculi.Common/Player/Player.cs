@@ -65,7 +65,7 @@ namespace Latrunculi
         /// Vratit tah hrace.
         /// </summary>
         /// <returns></returns>
-        public virtual Move GetMove(CancellationToken ct)
+        public virtual Move GetMove(System.Threading.CancellationToken ct)
         {
             throw new NotImplementedException();
         }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Latrunculi.Common
 {
@@ -17,16 +19,16 @@ namespace Latrunculi.Common
             _rules = rules;
         }
 
-        public virtual void ComputeBestMove(int level, GameColorsEnum color)
+        public void ComputeBestMove(int level, GameColorsEnum color, CancellationToken ct)
         {
             if (level < 0 || level > 2)
                 throw new ArgumentOutOfRangeException("level");
                         
             BestMove = null;
-            OnComputeMove(level, color);
-        }
+            OnComputeMove(level, color, ct);
+        } 
 
-        protected virtual void OnComputeMove(int level, GameColorsEnum color)
+        protected virtual void OnComputeMove(int level, GameColorsEnum color, CancellationToken ct)
         {
             throw new NotImplementedException();
         }

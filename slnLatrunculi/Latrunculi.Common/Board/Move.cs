@@ -24,8 +24,8 @@ namespace Latrunculi
             private set;
         }
 
-        private readonly List<RemovedPiece> _removedPieces = new List<RemovedPiece>();
-        public List<RemovedPiece> RemovedPieces
+        private readonly RemovedPieces _removedPieces = new RemovedPieces();
+        public RemovedPieces RemovedPieces
         {
             get
             {

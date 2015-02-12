@@ -13,5 +13,16 @@ namespace Latrunculi.Impl
             : base(board, rules)
         {
         }
+
+        Random r = new Random();
+        protected override void OnComputeMove(int level, GameColorsEnum color, System.Threading.CancellationToken ct)
+        {
+            Moves moves = Rules.GetValidMoves(color);
+            ct.ThrowIfCancellationRequested();
+
+            ct.ThrowIfCancellationRequested();
+
+            BestMove = moves[r.Next(0, moves.Count)];
+        }
     }
 }

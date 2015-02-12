@@ -29,8 +29,10 @@ namespace Latrunculi
         {
             Move result = null;
 
-            
-            return base.GetMove(ct);
+            Brain.ComputeBestMove(Level, Color, ct);
+            result = Brain.BestMove;
+
+            return result;
         }
 
         public override string ToString()

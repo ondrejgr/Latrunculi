@@ -18,13 +18,24 @@ namespace Latrunculi.Common
             Board = board;
         }
 
+        protected int numOfMovesWithoutRemoval = 0;
+        
         /// <summary>
         /// Zjistit, kdo je první na tahu (při nové hře).
         /// </summary>
         /// <returns></returns>
         public virtual GameColorsEnum GetFirstActivePlayerColor()
         {
-            return GameColorsEnum.plrWhite;
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Zjistit, kdo je další na tahu
+        /// </summary>
+        /// <returns></returns>
+        public virtual GameColorsEnum GetNextPlayerColor(GameColorsEnum activePlayerColor)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -98,6 +109,21 @@ namespace Latrunculi.Common
         protected virtual void OnSetPiecesToBeRemoved(Move move)
         {
             throw new NotImplementedException();
+        }
+
+        public virtual bool IsGameOver()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void IncNumOfMovesWithoutRemoval()
+        {
+            numOfMovesWithoutRemoval++;
+        }
+
+        public void ClearNumOfMovesWithoutRemoval()
+        {
+            numOfMovesWithoutRemoval = 0;
         }
     }
 }

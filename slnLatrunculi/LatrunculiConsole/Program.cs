@@ -25,8 +25,8 @@ namespace LatrunculiConsole
                 Console.WriteLine();
                 Console.WriteLine(string.Format("CHYBA ! Při běhu aplikace došlo k výjimce: {0}", exc.Message));
             }
-            Console.WriteLine("Stiskněte Enter pro opuštění aplikace.");
-            Console.ReadLine();
+//            Console.WriteLine("Stiskněte Enter pro opuštění aplikace.");
+//            Console.ReadLine();
         }
     }
 }

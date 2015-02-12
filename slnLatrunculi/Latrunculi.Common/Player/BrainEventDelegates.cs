@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 namespace Latrunculi
 {
-    public delegate void BrainComputationStarted();
-    public delegate void BrainComputationFinished();
+    public delegate void BrainComputationStartedEvent();
+    public delegate void BrainComputationFinishedEvent(Move bestMove, string errorMessage, bool isCancelled);
 }

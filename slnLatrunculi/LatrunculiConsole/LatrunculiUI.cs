@@ -31,6 +31,8 @@ namespace LatrunculiConsole
         private string FileName = "Latrunculi.Impl";
 
         private bool GameLoaded = false;
+        private IGame Game;
+        private bool ShowMenuForComputerPlayer = false;
         
         /// <summary>
         /// Nacteni herni logiky
@@ -61,6 +63,9 @@ namespace LatrunculiConsole
             game.RenderActivePlayer += Game_RenderActivePlayer;
             game.MoveInvalid += Game_MoveInvalid;
             game.GameOver += Game_GameOver;
+            game.BrainComputationStarted += Game_BrainComputationStarted;
+            game.BrainComputationFinished += Game_BrainComputationFinished;
+            game.PiecesRemoved += Game_PiecesRemoved;
         }
 
         private void UnhookGameEvents(IGame game)
@@ -71,6 +76,9 @@ namespace LatrunculiConsole
                 game.RenderActivePlayer -= Game_RenderActivePlayer;
                 game.MoveInvalid -= Game_MoveInvalid;
                 game.GameOver -= Game_GameOver;
+                game.BrainComputationStarted -= Game_BrainComputationStarted;
+                game.BrainComputationFinished -= Game_BrainComputationFinished;
+                game.PiecesRemoved -= Game_PiecesRemoved;
             }
         }
 
@@ -154,6 +162,50 @@ namespace LatrunculiConsole
             }
         }
 
+        private void Game_PiecesRemoved(Player piecesTaker, Player piecesOwner, Move move, int numPiecesWhite, int numPiecesBlack)
+        {
+            if (move.RemovedPieces.Count > 1)
+                Console.WriteLine(" Kameny zajaty. Nový počet kamenů {0}:{1}.", numPiecesWhite, numPiecesBlack);
+            else if (move.RemovedPieces.Count > 0)
+                Console.WriteLine(" Kamen zajat. Nový počet kamenů {0}:{1}.", numPiecesWhite, numPiecesBlack);
+        }
+
+        private void QueryCancelComputation()
+        {
+            Console.WriteLine("    Stiskněte klávesu X pro přerušení výpočtu.");
+            while (!Console.KeyAvailable && Game.IsComputing)
+            {
+
+            }
+            if (Game.IsComputing)
+            {
+                char c = Console.ReadKey(true).KeyChar;
+                if (Char.ToUpper(c) == 'X')
+                {
+                    Game.CancelBrainComputation();
+                    ShowMenuForComputerPlayer = true;
+                }
+                else
+                    QueryCancelComputation();
+            }
+        }
+
+        private void Game_BrainComputationStarted()
+        {
+            Console.WriteLine(" Výpočet tahu byl zahájen...");
+            Task.Run((Action)QueryCancelComputation);
+        }
+
+        private void Game_BrainComputationFinished(Move bestMove, string errorMessage, bool isCancelled)
+        {
+            if (isCancelled)
+                Console.WriteLine(" Výpočet byl ukončen: {0}", errorMessage);
+            else if (string.IsNullOrEmpty(errorMessage))
+                Console.WriteLine(" Výpočet tahu byl dokončen. Vypočítaný tah: {0}", bestMove);
+            else
+                Console.WriteLine(" CHYBA při výpočtu tahu: {0}", errorMessage);
+        }
+
         private string GetPlayersSetting(string current)
         {
             Console.WriteLine("Aktuální nastavení hráčů: {0}.", current);
@@ -171,21 +223,144 @@ namespace LatrunculiConsole
         }
 
         /// <summary>
+        /// Vykreslit menu
+        /// </summary>
+        /// <returns>False = ukoncit hru</returns>
+        private bool RenderMenu()
+        {
+            // zjistit tah hrace nebo umoznit ovladani programu pri tahu
+            Player Player = Game.ActivePlayer;
+            bool isHuman = Player is HumanPlayer;
+
+            if (!isHuman && !ShowMenuForComputerPlayer)
+                return true;
+
+            string prompt;
+            if (isHuman)
+            {
+                HumanMove.Move = null;
+                prompt = "Zadejte svůj tah (př. A2A3) nebo řídicí příkaz (? pro nápovědu)...";
+            }
+            else
+                prompt = "Zadejte řídicí příkaz (? pro nápovědu) nebo Enter pro výpočet tahu počítače...";
+
+            string str;
+            Console.Write(prompt);
+            str = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                if (isHuman)
+                    Console.WriteLine("CHYBA: Byl zadán prázdný řetězec.");
+                else
+                {
+                    ShowMenuForComputerPlayer = false;
+                    return true;
+                }
+            }
+            else
+            {
+                char command = Char.ToUpper(str[0]);
+                switch (command)
+                {
+                    case '?':
+                        Console.WriteLine("Příkazy, které je možné zadat:");
+                        Console.WriteLine("    Y = napoveda nejlepsiho tahu");
+                        Console.WriteLine("    R = znovu vykreslit hraci desku"); // pouze pro konzolu
+                        Console.WriteLine("    S = změnit nastavení hráčů");
+                        Console.WriteLine("    X = ukoncit hru");
+                        break;
+                    case 'Y':
+                        try
+                        {
+                            throw new NotImplementedException();
+                        }
+                        catch (Exception exc)
+                        {
+                            Console.WriteLine("CHYBA: Nejlepší tah nelze napovědět ! {0}", exc.Message);
+                        }
+                        break;
+                    case 'S':
+                        string oldSettings = Game.CurrentPlayersSetting;
+                        try
+                        {
+                            string newSettings = GetPlayersSetting(oldSettings);
+                            if (oldSettings != newSettings)
+                            {
+                                Game.SetPlayersFromString(newSettings);
+                                Console.WriteLine("Nastavení hráčů bylo změněno.");
+                            }
+                        }
+                        catch (Exception exc)
+                        {
+                            Console.WriteLine("CHYBA: Nastavení hráčů nebylo změněno: {0}", exc.Message);
+                            Game.SetPlayersFromString(oldSettings);
+                        }
+                        break;
+                    case 'R':
+                        try
+                        {
+                            Game_RenderBoard(Game);
+                            Game_RenderActivePlayer(Game, Player);
+                        }
+                        catch (Exception exc)
+                        {
+                            Console.WriteLine("CHYBA: Desku se nepodařilo překreslit ! {0}", exc.Message);
+                        }
+                        break;
+                    case 'X':
+                        Game.EndGame();
+                        return false;
+                    default:
+                        // jinak předpokládáme, že nejde o příkaz, ale byl zadán tah
+                        if (isHuman)
+                        {
+                            try
+                            {
+                                HumanMove.Move = Move.Parse(str, (Player.Color == GameColorsEnum.plrBlack) ? Pieces.pcBlack : Pieces.pcWhite);
+                                return true;
+                            }
+                            catch (Exception exc)
+                            {
+                                Console.WriteLine("Chyba zadání: {0}", exc.Message);
+                            }
+                        }
+                        break;
+                }
+            } // prazdny retezec zadan
+
+            return RenderMenu();
+        }
+
+        /// <summary>
         /// Spustit (UI loop)
         /// </summary>
         public void RunUI()
         {
-            IGame game = GetNewGameInstance();
-            Console.WriteLine("Instance hry {0} {1} byla vytvořena.", game.Title, game.Version);
+            Game = GetNewGameInstance();
+            Console.WriteLine("Instance hry {0} {1} byla vytvořena.", Game.Title, Game.Version);
             try
             {
-                HookGameEvents(game);
+                HookGameEvents(Game);
 
                 string playersSetting = GetPlayersSetting("H1C1");
                 Console.WriteLine("Spouštím hru.");
 
-                Task gameTask = Task.Run(new Action(() => game.Run(playersSetting)));
-                gameTask.Wait();
+                char ch;
+                do
+                {
+                    Game.Run(playersSetting);
+
+                    while (RenderMenu() && Game.Proceed())
+                    {
+                    };
+
+                    Console.WriteLine();
+                    Console.Write("Chcete hrát znovu ? (A/N) ");
+                    ch = Console.ReadKey().KeyChar;
+                    Console.WriteLine();
+                } 
+                while (Char.ToUpper(ch) == 'A');
             }
             catch (AggregateException exc)
             {
@@ -201,7 +376,7 @@ namespace LatrunculiConsole
             }
             finally
             {
-                UnhookGameEvents(game);
+                UnhookGameEvents(Game);
             }
         }
 

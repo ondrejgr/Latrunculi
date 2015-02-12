@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Latrunculi.Common
+namespace Latrunculi
 {
     public struct RemovedPiece
     {
@@ -24,5 +24,10 @@ namespace Latrunculi.Common
         {
             return new RemovedPiece() { Coord = coord, Piece = piece };
         }
+    }
+
+    public class RemovedPieces: List<RemovedPiece>
+    {
+
     }
 }
