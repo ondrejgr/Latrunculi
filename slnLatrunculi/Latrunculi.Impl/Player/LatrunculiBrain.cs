@@ -23,7 +23,7 @@ namespace Latrunculi.Impl
         {
             Position cur = new Position(color, Board);
 
-            BestMove = getBestMove(cur, 3, ct);
+            BestMove = getBestMove(cur, level + 1, ct);
         }
 
         static private int get_max(int ohod1, int ohod2)
@@ -119,51 +119,39 @@ namespace Latrunculi.Impl
             for (char x = 'A'; x <= 'H'; x++ )
             {
                 c.Set(x, 3);
-                if (pos.Board[c] == own)
+                if (pos.Board[c] == Pieces.pcWhite)
                     result = result + 1 + (x % 2) * 2;
 
                 c.Set(x, 4);
-                if (pos.Board[c] == own)
+                if (pos.Board[c] == Pieces.pcWhite)
                     result = result + 2 + (x % 2) * 2;
 
                 c.Set(x, 5);
-                if (pos.Board[c] == own)
+                if (pos.Board[c] == Pieces.pcWhite)
                     result = result + 3 + (x % 2) * 2;
             }
             for (char x = 'A'; x <= 'H'; x++)
             {
                 c.Set(x, 3);
-                if (pos.Board[c] == enem)
+                if (pos.Board[c] == Pieces.pcBlack)
                     result = result - 1 - (x % 2) * 2;
 
                 c.Set(x, 4);
-                if (pos.Board[c] == enem)
+                if (pos.Board[c] == Pieces.pcBlack)
                     result = result - 2 - (x % 2) * 2;
 
                 c.Set(x, 5);
-                if (pos.Board[c] == enem)
+                if (pos.Board[c] == Pieces.pcBlack)
                     result = result - 3 - (x % 2) * 2;
             }
 
-            if (pos.ActivePlayerColor == GameColorsEnum.plrWhite)
+
+            for (char x = 'A'; x <= 'H'; x++)
             {
-                for (char x = 'A'; x <= 'H'; x++)
-                {
-                    c.Set(x, 1);
-                    c2.Set(x, 2);
-                    if (pos.Board[c] == own && pos.Board[c2] == Pieces.pcNone)
-                        result = result + 5;
-                }
-            }
-            else
-            {
-                for (char x = 'A'; x <= 'H'; x++)
-                {
-                    c.Set(x, 7);
-                    c2.Set(x, 6);
-                    if (pos.Board[c] == own && pos.Board[c2] == Pieces.pcNone)
-                        result = result + 5;
-                }
+                c.Set(x, 1);
+                c2.Set(x, 2);
+                if (pos.Board[c] == Pieces.pcWhite && pos.Board[c2] == Pieces.pcNone)
+                    result = result + 1;
             }
 
             if (pos.MyNumOfPieces - pos.EnemyNumOfPieces > 1)
