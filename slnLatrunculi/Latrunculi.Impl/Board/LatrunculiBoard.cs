@@ -9,7 +9,7 @@ namespace Latrunculi.Impl
     /// <summary>
     /// Deska pro Latrunculi
     /// </summary>
-    public class LatrunculiBoard: Board
+    public class LatrunculiBoard: Board, ICloneable
     {
         public override char MaxX
         {
@@ -52,6 +52,13 @@ namespace Latrunculi.Impl
                     c.Set(x, y);
                     this[c] = p;
                 }
+        }
+
+        public object Clone()
+        {
+            LatrunculiBoard board = new LatrunculiBoard();
+            
+            return board;
         }
     }
 }

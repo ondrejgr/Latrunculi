@@ -258,7 +258,23 @@ namespace Latrunculi
             if (!(this is ICloneable))
                 throw new NotSupportedException();
             else
-                return ((ICloneable)this).Clone() as Board;
+            {
+                Board board = ((ICloneable)this).Clone() as Board;
+                board.AllocOrResetData();
+                board.IsInitiaized = true;
+
+                Coord c = new Coord();
+                for (char x = 'A'; x <= MaxX; x++)
+                {
+                    for (byte y = 1; y <= MaxY; y++)
+                    {
+                        c.Set(x, y);
+                        board[c] = this[c];
+                    }
+                }
+
+                return board;
+            }
         }
     }
 }

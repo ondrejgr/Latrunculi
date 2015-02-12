@@ -52,6 +52,7 @@
     <Compile Include="Board\Move.cs" />
     <Compile Include="Board\Moves.cs" />
     <Compile Include="Board\PiecesEnum.cs" />
+    <Compile Include="Board\Position.cs" />
     <Compile Include="Board\RemovedPiece.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Game\GameColorsEnum.cs" />
