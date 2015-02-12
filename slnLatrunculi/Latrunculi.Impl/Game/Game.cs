@@ -215,6 +215,14 @@ namespace Latrunculi.Impl
         }
 
         /// <summary>
+        /// Zjistit napovedu tahu.
+        /// </summary>
+        public Brain GetBrainInstance()
+        {
+            return new LatrunculiBrain(Board, Rules);
+        }
+
+        /// <summary>
         /// Smycka manazera hry
         /// </summary>
         /// <returns>False = konec hry</returns>

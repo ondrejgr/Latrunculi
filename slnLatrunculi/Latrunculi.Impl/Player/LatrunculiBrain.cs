@@ -20,8 +20,9 @@ namespace Latrunculi.Impl
             Moves moves = Rules.GetValidMoves(color);
             ct.ThrowIfCancellationRequested();
 
-            ct.ThrowIfCancellationRequested();
+            System.Threading.Thread.Sleep(3000);
 
+            ct.ThrowIfCancellationRequested();
             BestMove = moves[r.Next(0, moves.Count)];
         }
     }

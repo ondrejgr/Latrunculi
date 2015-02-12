@@ -55,6 +55,7 @@ namespace Latrunculi
         bool Proceed();
 
         void SetPlayersFromString(string newSettings);
+        Brain GetBrainInstance();
         void CancelBrainComputation();
     }
 }

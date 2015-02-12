@@ -172,7 +172,6 @@ namespace LatrunculiConsole
 
         private void QueryCancelComputation()
         {
-            Console.WriteLine("    Stiskněte klávesu X pro přerušení výpočtu.");
             while (!Console.KeyAvailable && Game.IsComputing)
             {
 
@@ -193,6 +192,7 @@ namespace LatrunculiConsole
         private void Game_BrainComputationStarted()
         {
             Console.WriteLine(" Výpočet tahu byl zahájen...");
+            Console.WriteLine("    Stiskněte klávesu X pro přerušení výpočtu.");
             Task.Run((Action)QueryCancelComputation);
         }
 
@@ -271,13 +271,43 @@ namespace LatrunculiConsole
                         Console.WriteLine("    X = ukoncit hru");
                         break;
                     case 'Y':
+                        Task<Move> calcMove = null;
                         try
                         {
-                            throw new NotImplementedException();
+                            using (System.Threading.CancellationTokenSource cts = new System.Threading.CancellationTokenSource())
+                            {
+                                Game_BrainComputationStarted();
+                                calcMove = Task<Move>.Run(new Func<Move>(() =>
+                                    {
+                                        Brain brain = Game.GetBrainInstance();
+                                        brain.ComputeBestMove(Player.Level, Player.Color, cts.Token);
+                                        return brain.BestMove;
+                                    }), cts.Token);
+                                while (true)
+                                {
+                                    if (calcMove.IsCompleted)
+                                    {
+                                        Game_BrainComputationFinished(calcMove.Result, string.Empty, false);
+                                        break;
+                                    }
+                                    else if (Console.KeyAvailable)
+                                    {
+                                        if (Char.ToUpper(Console.ReadKey(true).KeyChar) == 'X')
+                                            cts.Cancel();
+                                    }
+                                }
+                            }
+                        }
+                        catch (AggregateException exc)
+                        {
+                            if ((exc.InnerExceptions[0] is OperationCanceledException) || calcMove.IsCanceled)
+                                Game_BrainComputationFinished(null, "Operace byla přerušena uživatelem.", true);
+                            else
+                                Game_BrainComputationFinished(null, string.Join(Environment.NewLine, exc.InnerExceptions.Select(s => s.Message)), false);
                         }
                         catch (Exception exc)
                         {
-                            Console.WriteLine("CHYBA: Nejlepší tah nelze napovědět ! {0}", exc.Message);
+                            Game_BrainComputationFinished(null, exc.Message, false);
                         }
                         break;
                     case 'S':
@@ -369,10 +399,12 @@ namespace LatrunculiConsole
                 {
                     Console.WriteLine("  {0}", ex.Message);
                 }
+                Console.ReadLine();
             }
             catch (Exception exc)
             {
                 Console.WriteLine("CHYBA ! Při běhu hry došlo k výjimce: {0}", exc.Message);
+                Console.ReadLine();
             }
             finally
             {
