@@ -217,8 +217,8 @@
 \def\mail{\@@ignorewhs{\s@mail}}
 \def\s@mail#1{\@pdfuri{\lowercase{\tt\char60#1\char62}}{mailto:#1}\egroup}
 
-\def\url{\@@ignorewhs{\s@url}}
-\def\s@url#1{\@pdfuri{\lowercase{\tt#1}}{#1}\egroup}
+%%\def\url{\@@ignorewhs{\s@url}}
+%%\def\s@url#1{\@pdfuri{\lowercase{\tt#1}}{#1}\egroup}
 
 \def\link#1{\gdef\@linktxt{#1}\@@ignorewhs{\s@link}}
 \def\s@link#1{\@pdfuri{\@linktxt}{#1}\egroup}
