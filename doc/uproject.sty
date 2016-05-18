@@ -21,6 +21,9 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{uproject}[2001/06/22 UP Project Style]
 
+\usepackage[czech]{babel} %% gratz
+\selectlanguage{czech}
+
 %% style options
 \def\@inspdf#1{#1}
 \def\@print@lot{}
@@ -56,14 +59,30 @@
 \usepackage{amsthm}
 \usepackage{euscript}
 
+
+% Barvy.
+%%\RequirePackage[usenames,dvipsnames,table]{xcolor}
+
+%% Klikací odkazy v PDF.
+\RequirePackage[unicode,breaklinks=true]{hyperref}
+%% PDF záložky.
+\RequirePackage[open,atend]{bookmark}
+
 %% localization, page layout
-\usepackage{a4}
+\RequirePackage[
+  paper=a4paper,
+  driver=pdftex,
+  top=3.5cm,
+  left=4cm,
+  bottom=3.5cm,
+  width=1.05\textwidth
+]{geometry}
 \usepackage{booktabs}
-\usepackage{czech}
 \usepackage{multicol}
 
 %% figures, logos
-\usepackage{epsfig}
+%%\usepackage{epsfig} %% GRATZ
+\usepackage{graphicx} %% GRATZ
 \usepackage{mflogo}
 
 %% disallow two-sided documents
@@ -105,7 +124,7 @@
       \vskip 4cm
       {\LARGE \@title \ifx\@subtitle\undefined\null\else\\[1em]\@subtitle\fi}
       \vskip 4cm
-      \centerline{\epsfbox{uplogo.eps}}
+      \centerline{\includegraphics[height=1.5cm]{uplogo.pdf}}
     \end{center}
     \vfill
     {\noindent \@date \hfill%
@@ -132,28 +151,6 @@
 %%  \pagenumbering{arabic}
   \setcounter{footnote}{0}}%
 
-%% references, bibliography
-\renewenvironment{thebibliography}[1]
-{\insertoutline{1}{\refname}%
-  \section*{\refname
-    \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}}%
-  \addcontentsline{toc}{section}{\refname}
-  \list{\@biblabel{\@arabic\c@enumiv}}%
-  {\settowidth\labelwidth{\@biblabel{#1}}%
-    \leftmargin\labelwidth
-    \advance\leftmargin\labelsep
-    \@openbib@code
-    \usecounter{enumiv}%
-    \let\p@enumiv\@empty
-    \renewcommand\theenumiv{\@arabic\c@enumiv}}%
-  \sloppy
-  \clubpenalty4000
-  \@clubpenalty \clubpenalty
-  \widowpenalty4000%
-  \sfcode`\.\@m}
-{\def\@noitemerr
-  {\@latex@warning{Empty `thebibliography' environment}}%
-  \endlist}
 
 %% section counters
 \renewcommand\thepart         {\@Roman\c@part.}
@@ -265,7 +262,7 @@
 
 %% adjust page size
 \sloppy
-\addtolength{\oddsidemargin}{-1cm}
+\addtolength{\oddsidemargin}{-2cm}
 \addtolength{\textwidth}{2cm}
 \addtolength{\topmargin}{-1cm}
 \addtolength{\textheight}{1.5cm}
