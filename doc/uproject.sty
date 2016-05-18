@@ -232,27 +232,8 @@
 \def\emphref#1{\gdef\@emphreftxt{#1}\@@ignorewhs{\s@emphref}}
 \def\s@emphref#1{\@pdflink{\@emphreftxt}{lnk#1}\egroup}
 
-%% initialize outlines
-\def\insertoutline#1#2{%
-  \@inspdf{\special{pdf:outline #1 
-      << /Title (#2) /Dest [ @thispage /FitH @ypos ] >>}}}
 
-\def\nextoutline#1{\gdef\@@nextoutlinelabel{#1}}
-\let\@oldsect=\@sect
-\def\@sect#1#2#3#4#5#6[#7]#8{%
-  \ifx\@@nextoutlinelabel\undefined\insertoutline{#2}{#7}%
-  \else\insertoutline{#2}{\@@nextoutlinelabel}%
-  \let\@@nextoutlinelabel=\undefined\fi%
-  \@oldsect{#1}{#2}{#3}{#4}{#5}{#6}[#7]{#8}}
 
-%% insert outlines manually
-\def\outline{\insertoutline{1}}
-\def\suboutline{\insertoutline{2}}
-\def\subsuboutline{\insertoutline{3}}
-\def\subsubsuboutline{\insertoutline{4}}
-
-%% document initialization
-\special{\@inspdf{pdf:docview <</PageMode /UseOutlines >>}}
 
 %% document info
 \def\@docinfo#1#2{\@inspdf{%
